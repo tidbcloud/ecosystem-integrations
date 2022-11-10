@@ -3,7 +3,7 @@
 ### New Triggers
 
 - New Cluster: Triggers when a new cluster is created.
-- New Project: Triggers when a new project is created.
+- New Table: Triggers when a new table is created.
 - New Row: Triggers when new rows are created. Only fetch the recently 10000 new rows.
 - New Row (Custom Query): Triggers when new rows are returned from a custom query that you provide.
 
