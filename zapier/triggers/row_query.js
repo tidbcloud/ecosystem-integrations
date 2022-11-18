@@ -7,9 +7,27 @@ const perform = async (z, bundle) => {
   const user = bundle.inputData.user
   const tidbPassword = bundle.inputData.tidbPassword
 
-  const [rows,error] = await queryWithTimeOut(host, user, port, tidbPassword, null , 30, bundle.inputData.query)
+  const limitQuery = `select * from (${bundle.inputData.query}) as fake_table limit 10000`
+  const [rows,error] = await queryWithTimeOut(host, user, port, tidbPassword, null , 30, limitQuery)
   if(error) {
     throw new z.errors.Error("Execute SQL error", error, 400)
+  }
+
+  if (rows.length === 0) {
+    return rows
+  }
+
+  // check id field
+  let hasId = false
+  const keys = Object.keys(rows[0])
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i] === "id") {
+      hasId = true
+      break;
+    }
+  }
+  if (!hasId) {
+    throw new z.errors.Error("You must return the results with id field")
   }
 
   return rows

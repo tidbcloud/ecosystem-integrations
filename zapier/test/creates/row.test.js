@@ -47,7 +47,7 @@ describe('row', () => {
         host: process.env.TEST_TIDB_HOST,
         user: process.env.TEST_TIDB_USER,
         port: process.env.TEST_TIDB_PORT,
-        table: 't',
+        table: tableName,
         id: 1,
         name: 'name1',
         age: 10

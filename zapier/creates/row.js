@@ -37,10 +37,10 @@ const perform = async (z, bundle) => {
   values += ")"
   columns += ")"
 
-  await query(host, user, port, tidbPassword,
+  const [_, error2] = await query(host, user, port, tidbPassword,
       database, `insert into ${table} ${columns} values ${values}`, data)
-  if (error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  if (error2) {
+    throw new z.errors.Error("Execute SQL error", error2, 400)
   }
 
   return Object.create(null)

@@ -145,4 +145,4 @@ npm test -- test/triggers/row.test.js
 
 You can use `zapier test` to test all the tests. But we recommend you to test one by one because you can only create one serverless tier.
 
-Thus, you can hardly test the cluster create and other tests which need a TiDB cluster.
+Thus, you can hardly test the cluster create and other tests which need a TiDB cluster in the same time.
