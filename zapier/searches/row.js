@@ -1,7 +1,6 @@
 // find a particular row by name
-const query = require("../tidb_client/PromiseClient");
+const query = require('../tidb_client/PromiseClient')
 const perform = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
@@ -9,26 +8,34 @@ const perform = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database, `select * from ${table} where ${bundle.inputData.lookup_column} = ?`, [bundle.inputData.lookup_value])
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `select * from ${table} where ${bundle.inputData.lookup_column} = ?`,
+    [bundle.inputData.lookup_value],
+  )
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
   return rows
-
-};
+}
 
 const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
   const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    url:
+      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -38,19 +45,19 @@ const computedFields = async (z, bundle) => {
       key: 'connection',
       label: 'Connection',
       children: [
-        {key: 'host', required: true, label: 'TiDB Host', default: host},
-        {key: 'port', required: true, label: 'TiDB Port', default: port},
-        {key: 'user', required: true, label: 'TiDB User', default: user},
+        { key: 'host', required: true, label: 'TiDB Host', default: host },
+        { key: 'port', required: true, label: 'TiDB Port', default: port },
+        { key: 'user', required: true, label: 'TiDB User', default: user },
         {
           key: 'tidbPassword',
           required: true,
           type: 'password',
           label: 'TiDB Password',
         },
-      ]
-    }
+      ],
+    },
   ]
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -61,7 +68,7 @@ module.exports = {
   display: {
     label: 'Find Row',
     description: 'Finds a row in a table via a lookup column.',
-    important: true
+    important: true,
   },
 
   operation: {
@@ -101,7 +108,8 @@ module.exports = {
         label: 'Table Name',
         dynamic: 'tableList.name.name',
         altersDynamicFields: true,
-        helpText: 'We expect at least one unique (and usually autoincrement) primary key column so we can deduplicate records properly!',
+        helpText:
+          'We expect at least one unique (and usually autoincrement) primary key column so we can deduplicate records properly!',
       },
       {
         key: 'lookup_column',
@@ -132,6 +140,6 @@ module.exports = {
       // these are placeholders to match the example `perform` above
       // {key: 'id', label: 'Person ID'},
       // {key: 'name', label: 'Person Name'}
-    ]
-  }
-};
+    ],
+  },
+}

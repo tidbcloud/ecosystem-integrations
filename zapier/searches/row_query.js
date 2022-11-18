@@ -1,31 +1,31 @@
 // find a particular row_query by name
-const queryWithTimeOut = require("../tidb_client/PromiseClientWithTimeout");
+const queryWithTimeOut = require('../tidb_client/PromiseClientWithTimeout')
 const perform = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
   const tidbPassword = bundle.inputData.tidbPassword
 
-  const [rows,error] = await queryWithTimeOut(host, user, port, tidbPassword, null , 30, bundle.inputData.query)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await queryWithTimeOut(host, user, port, tidbPassword, null, 30, bundle.inputData.query)
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
   return rows
-};
+}
 
 const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
   const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    url:
+      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -35,19 +35,19 @@ const computedFields = async (z, bundle) => {
       key: 'connection',
       label: 'Connection',
       children: [
-        {key: 'host', required: true, label: 'TiDB Host', default: host},
-        {key: 'port', required: true, label: 'TiDB Port', default: port},
-        {key: 'user', required: true, label: 'TiDB User', default: user},
+        { key: 'host', required: true, label: 'TiDB Host', default: host },
+        { key: 'port', required: true, label: 'TiDB Port', default: port },
+        { key: 'user', required: true, label: 'TiDB User', default: user },
         {
           key: 'tidbPassword',
           required: true,
           type: 'password',
           label: 'TiDB password',
         },
-      ]
-    }
+      ],
+    },
   ]
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -57,7 +57,7 @@ module.exports = {
 
   display: {
     label: 'Find Row (Custom Query)',
-    description: 'Finds a Row in a table via a custom query in your control.'
+    description: 'Finds a Row in a table via a custom query in your control.',
   },
 
   operation: {
@@ -87,7 +87,8 @@ module.exports = {
         key: 'query',
         required: true,
         label: 'Query',
-        helpText: 'You should include desired ordering and limiting (usually to 1 record) in the query. This query must run in less than 30 seconds.',
+        helpText:
+          'You should include desired ordering and limiting (usually to 1 record) in the query. This query must run in less than 30 seconds.',
       },
     ],
 
@@ -96,7 +97,7 @@ module.exports = {
     // returned records, and have obvious placeholder values that we can show to any user.
     sample: {
       id: 1,
-      name: 'Test'
+      name: 'Test',
     },
 
     // If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels
@@ -107,6 +108,6 @@ module.exports = {
       // these are placeholders to match the example `perform` above
       // {key: 'id', label: 'Person ID'},
       // {key: 'name', label: 'Person Name'}
-    ]
-  }
-};
+    ],
+  },
+}

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 // You want to make a request to an endpoint that is either specifically designed
 // to test auth, or one that every user will have access to. eg: `/me`.
@@ -8,10 +8,10 @@
 const test = (z, bundle) =>
   z.request({
     url: 'https://api.tidbcloud.com/api/v1beta/projects',
-  });
+  })
 
 const label = (z, bundle) => {
-  return bundle.authData.username;
+  return bundle.authData.username
 }
 
 // This function runs after every outbound request. You can use it to check for
@@ -23,12 +23,12 @@ const handleBadResponses = (response, z, bundle) => {
       // This message is surfaced to the user
       'The public key and/or private key you supplied is incorrect',
       'AuthenticationError',
-      response.status
-    );
+      response.status,
+    )
   }
 
-  return response;
-};
+  return response
+}
 
 module.exports = {
   config: {
@@ -43,7 +43,8 @@ module.exports = {
         key: 'username',
         required: true,
         label: 'Public Key',
-        helpText: 'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key. Copy and save them in a secure location.',
+        helpText:
+          'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key. Copy and save them in a secure location.',
       },
       {
         key: 'password',
@@ -63,8 +64,8 @@ module.exports = {
     // be `{{X}}`. This can also be a function that returns a label. That function has
     // the standard args `(z, bundle)` and data returned from the test can be accessed
     // in `bundle.inputData.X`.
-    connectionLabel: label ,
+    connectionLabel: label,
   },
   befores: [],
   afters: [handleBadResponses],
-};
+}

@@ -1,7 +1,6 @@
 // create a particular row_update by name
-const query = require("../tidb_client/PromiseClient");
+const query = require('../tidb_client/PromiseClient')
 const perform = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
@@ -9,46 +8,49 @@ const perform = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-
-  const [rows,error] = await query(host, user, port, tidbPassword, database,`show columns from ${table}`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
   let sql = `update ${table} set `
-  let index = 0;
-  for (let i = 0;i < rows.length;i++) {
-    if(bundle.inputData[rows[i].Field] === undefined || bundle.inputData[rows[i].Field] === null || bundle.inputData[rows[i].Field] === '') {
-      continue;
+  let index = 0
+  for (let i = 0; i < rows.length; i++) {
+    if (
+      bundle.inputData[rows[i].Field] === undefined || bundle.inputData[rows[i].Field] === null ||
+      bundle.inputData[rows[i].Field] === ''
+    ) {
+      continue
     }
-    if(index>0){
+    if (index > 0) {
       sql += `,${rows[i].Field} = '${bundle.inputData[rows[i].Field]}'`
-    }else{
+    } else {
       sql += `${rows[i].Field} = '${bundle.inputData[rows[i].Field]}'`
     }
-    index++;
+    index++
   }
   sql += ` where ${bundle.inputData.id_column} = ${bundle.inputData.id_column_value}`
 
-  const [_,error1] =await query(host, user, port, tidbPassword, database, sql)
-  if(error1) {
-    throw new z.errors.Error("Execute SQL error", error1, 400)
+  const [_, error1] = await query(host, user, port, tidbPassword, database, sql)
+  if (error1) {
+    throw new z.errors.Error('Execute SQL error', error1, 400)
   }
 
   return Object.create(null)
-};
+}
 
 const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
   const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    url:
+      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -58,23 +60,22 @@ const computedFields = async (z, bundle) => {
       key: 'connection',
       label: 'Connection',
       children: [
-        {key: 'host', required: true, label: 'TiDB Host', default: host},
-        {key: 'port', required: true, label: 'TiDB Port', default: port},
-        {key: 'user', required: true, label: 'TiDB User', default: user},
+        { key: 'host', required: true, label: 'TiDB Host', default: host },
+        { key: 'port', required: true, label: 'TiDB Port', default: port },
+        { key: 'user', required: true, label: 'TiDB User', default: user },
         {
           key: 'tidbPassword',
           required: true,
           type: 'password',
           label: 'TiDB Password',
         },
-      ]
-    }
-
+      ],
+    },
   ]
-};
+}
 
 const rowFields = async (z, bundle) => {
-  if(bundle.inputData.table === undefined) {
+  if (bundle.inputData.table === undefined) {
     return []
   }
 
@@ -85,22 +86,26 @@ const rowFields = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database,`show columns from ${table}`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
-  const result = [];
-  for(let i =0; i < rows.length; i++) {
-    result[i] = { key: rows[i].Field, label: `Update ${rows[i].Field}`, helpText: `A field called ${rows[i].Field} of type: ${rows[i].Type}, ignore it if you do not want to update it` }
+  const result = []
+  for (let i = 0; i < rows.length; i++) {
+    result[i] = {
+      key: rows[i].Field,
+      label: `Update ${rows[i].Field}`,
+      helpText: `A field called ${rows[i].Field} of type: ${rows[i].Type}, ignore it if you do not want to update it`,
+    }
   }
 
   return [{
     key: 'columns',
     label: 'Columns',
-    children: result
+    children: result,
   }]
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -110,7 +115,7 @@ module.exports = {
 
   display: {
     label: 'Update Row',
-    description: 'Updates an existing row.'
+    description: 'Updates an existing row.',
   },
 
   operation: {
@@ -164,7 +169,7 @@ module.exports = {
         key: 'id_column_value',
         required: true,
         label: 'ID Column Value',
-        helpText: 'Enter the value of ID Column.'
+        helpText: 'Enter the value of ID Column.',
       },
       rowFields,
     ],
@@ -174,7 +179,7 @@ module.exports = {
     // returned records, and have obvious placeholder values that we can show to any user.
     sample: {
       id: 1,
-      name: 'Test'
+      name: 'Test',
     },
 
     // If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels
@@ -185,6 +190,6 @@ module.exports = {
       // these are placeholders to match the example `perform` above
       // {key: 'id', label: 'Person ID'},
       // {key: 'name', label: 'Person Name'}
-    ]
-  }
-};
+    ],
+  },
+}

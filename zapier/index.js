@@ -2,29 +2,29 @@ const {
   config: authentication,
   befores = [],
   afters = [],
-} = require('./authentication');
+} = require('./authentication')
 
-const createRow = require("./creates/row");
+const createRow = require('./creates/row')
 
-const projectResource = require("./resources/project");
+const projectResource = require('./resources/project')
 
-const clusterResource = require("./resources/cluster");
+const clusterResource = require('./resources/cluster')
 
-const databaseResource = require("./resources/database");
+const databaseResource = require('./resources/database')
 
-const tableResource = require("./resources/table");
+const tableResource = require('./resources/table')
 
-const getRow = require("./triggers/row");
+const getRow = require('./triggers/row')
 
-const columnResource = require("./resources/column");
+const columnResource = require('./resources/column')
 
-const findRow = require("./searches/row");
+const findRow = require('./searches/row')
 
-const findRowQuery = require("./searches/row_query");
+const findRowQuery = require('./searches/row_query')
 
-const getRowQuery = require("./triggers/row_query");
+const getRowQuery = require('./triggers/row_query')
 
-const createRowUpdate = require("./creates/row_update");
+const createRowUpdate = require('./creates/row_update')
 
 module.exports = {
   // This is just shorthand to reference the installed dependencies you have.
@@ -41,19 +41,19 @@ module.exports = {
   // If you want your trigger to show up, you better include it here!
   triggers: {
     [getRow.key]: getRow,
-    [getRowQuery.key]: getRowQuery
+    [getRowQuery.key]: getRowQuery,
   },
 
   // If you want your searches to show up, you better include it here!
   searches: {
     [findRow.key]: findRow,
-    [findRowQuery.key]: findRowQuery
+    [findRowQuery.key]: findRowQuery,
   },
 
   // If you want your creates to show up, you better include it here!
   creates: {
     [createRow.key]: createRow,
-    [createRowUpdate.key]: createRowUpdate
+    [createRowUpdate.key]: createRowUpdate,
   },
 
   resources: {
@@ -61,6 +61,6 @@ module.exports = {
     [clusterResource.key]: clusterResource,
     [databaseResource.key]: databaseResource,
     [tableResource.key]: tableResource,
-    [columnResource.key]: columnResource
+    [columnResource.key]: columnResource,
   },
-};
+}

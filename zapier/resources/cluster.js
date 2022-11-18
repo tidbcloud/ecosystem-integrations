@@ -5,10 +5,10 @@ const performList = async (z, bundle) => {
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   return response.data.items
-};
+}
 
 // find a cluster
 const performSearch = async (z, bundle) => {
@@ -17,16 +17,17 @@ const performSearch = async (z, bundle) => {
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   for (let i = 0; i < response.data.items.length; i++) {
     if (response.data.items[i].cluster_type === bundle.inputData.clusterType) {
-      if (bundle.inputData.clusterName === undefined || response.data.items[i].name === bundle.inputData.clusterName)
-      return [response.data.items[i]]
+      if (bundle.inputData.clusterName === undefined || response.data.items[i].name === bundle.inputData.clusterName) {
+        return [response.data.items[i]]
+      }
     }
   }
   return []
-};
+}
 
 // creates a new cluster
 const performCreate = async (z, bundle) => {
@@ -35,19 +36,19 @@ const performCreate = async (z, bundle) => {
     url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
     body: {
       name: bundle.inputData.clusterName,
-      "cluster_type": "DEVELOPER",
-      "cloud_provider": "AWS",
-      "region": bundle.inputData.region,
-      "config":{
-        "root_password": bundle.inputData.tidbPassword,
-      }
-    }
-  });
+      cluster_type: 'DEVELOPER',
+      cloud_provider: 'AWS',
+      region: bundle.inputData.region,
+      config: {
+        root_password: bundle.inputData.tidbPassword,
+      },
+    },
+  })
   return {
     id: response.data.id,
     name: bundle.inputData.clusterName,
   }
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -72,8 +73,8 @@ module.exports = {
           dynamic: 'projectList.id.name',
           helpText: 'Select your project name!',
         },
-      ]
-    }
+      ],
+    },
   },
 
   create: {
@@ -99,8 +100,13 @@ module.exports = {
           key: 'region',
           required: true,
           label: 'Region',
-          choices: { 'us-west-2': 'Oregon (us-west-2)', 'us-east-1': 'N. Virginia (us-east-1)','ap-southeast-1':'Singapore (ap-southeast-1)',
-            'ap-northeast-1':'Tokyo (ap-northeast-1)','eu-central-1':'Frankfurt (eu-central-1)' },
+          choices: {
+            'us-west-2': 'Oregon (us-west-2)',
+            'us-east-1': 'N. Virginia (us-east-1)',
+            'ap-southeast-1': 'Singapore (ap-southeast-1)',
+            'ap-northeast-1': 'Tokyo (ap-northeast-1)',
+            'eu-central-1': 'Frankfurt (eu-central-1)',
+          },
         },
         {
           key: 'tidbPassword',
@@ -112,7 +118,7 @@ module.exports = {
       perform: performCreate,
       sample: {
         id: 1,
-        name: 'test'
+        name: 'test',
       },
     },
   },
@@ -135,9 +141,9 @@ module.exports = {
           key: 'clusterType',
           required: true,
           choices: {
-            'DEVELOPER': 'Serverless tier',
-            'DEDICATED': 'Dedicated tier',
-          }
+            DEVELOPER: 'Serverless tier',
+            DEDICATED: 'Dedicated tier',
+          },
         },
         {
           key: 'clusterName',
@@ -145,7 +151,6 @@ module.exports = {
           required: true,
           helpText: 'The name of the cluster.',
         },
-
       ],
       perform: performSearch,
     },
@@ -159,10 +164,10 @@ module.exports = {
     id: 1,
     name: 'Test',
     project_id: 1,
-    cluster_type: "DEDICATED",
-    cloud_provider: "AWS",
-    region: "us-west-1",
-    create_timestamp : 1656991448,
+    cluster_type: 'DEDICATED',
+    cloud_provider: 'AWS',
+    region: 'us-west-1',
+    create_timestamp: 1656991448,
   },
 
   // If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels
@@ -170,6 +175,5 @@ module.exports = {
   // https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields
   // Alternatively, a static field definition can be provided, to specify labels for the fields
   // In this resource, these output fields are reused across all resources
-  outputFields: [
-  ]
-};
+  outputFields: [],
+}

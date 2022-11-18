@@ -1,7 +1,6 @@
 // get a list of columns
-const query = require("../tidb_client/PromiseClient");
+const query = require('../tidb_client/PromiseClient')
 const performList = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
@@ -9,17 +8,17 @@ const performList = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
-  const result = [];
-  for(let i =0; i < rows.length; i++) {
+  const result = []
+  for (let i = 0; i < rows.length; i++) {
     result[i] = { id: i, name: rows[i].Field, type: rows[i].Type }
   }
-  return result;
-};
+  return result
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -31,14 +30,14 @@ module.exports = {
     display: {
       label: 'New Column',
       description: 'Triggers when lists the columns.',
-      hidden: true
+      hidden: true,
     },
     operation: {
       perform: performList,
       // `inputFields` defines the fields a user could provide
       // Zapier will pass them in as `bundle.inputData` later. They're optional on triggers, but required on searches and creates.
-      inputFields: []
-    }
+      inputFields: [],
+    },
   },
 
   // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -48,7 +47,7 @@ module.exports = {
   sample: {
     id: 1,
     name: 'Test',
-    type: 'int(11)'
+    type: 'int(11)',
   },
 
   // If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels
@@ -56,6 +55,5 @@ module.exports = {
   // https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields
   // Alternatively, a static field definition can be provided, to specify labels for the fields
   // In this resource, these output fields are reused across all resources
-  outputFields: [
-  ]
-};
+  outputFields: [],
+}

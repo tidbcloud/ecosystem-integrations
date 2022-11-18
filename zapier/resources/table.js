@@ -1,73 +1,84 @@
 // get a list of tables
-const query = require("../tidb_client/PromiseClient");
+const query = require('../tidb_client/PromiseClient')
 const performList = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
   const tidbPassword = bundle.inputData.tidbPassword
   const database = bundle.inputData.database
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database, `select tidb_table_id,table_name from information_schema.tables where table_schema='${bundle.inputData.database}'`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `select tidb_table_id,table_name from information_schema.tables where table_schema='${bundle.inputData.database}'`,
+  )
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
-  const result = [];
-  for(let i =0; i < rows.length; i++) {
-      result[i] = { id: rows[i].tidb_table_id, name: rows[i].table_name }
-    }
-  return result;
-
-};
+  const result = []
+  for (let i = 0; i < rows.length; i++) {
+    result[i] = { id: rows[i].tidb_table_id, name: rows[i].table_name }
+  }
+  return result
+}
 
 // creates a new table
 const performCreate = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
   const tidbPassword = bundle.inputData.tidbPassword
   const database = bundle.inputData.database
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database, `${bundle.inputData.tableDDL}`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `${bundle.inputData.tableDDL}`)
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
   return Object.create(null)
-};
+}
 
 // find a table
 const performSearch = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
   const tidbPassword = bundle.inputData.tidbPassword
   const database = bundle.inputData.database
 
-  const [rows,error] = await query(host, user, port, tidbPassword, database, `select table_name from information_schema.tables where table_schema='${bundle.inputData.database}' and table_name='${bundle.inputData.table}'`)
-  if(error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `select table_name from information_schema.tables where table_schema='${bundle.inputData.database}' and table_name='${bundle.inputData.table}'`,
+  )
+  if (error) {
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
-  if(rows.length !== 0) {
-    return [{table: rows[0].table_name}]
+  if (rows.length !== 0) {
+    return [{ table: rows[0].table_name }]
   }
   return []
-};
+}
 
 const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
   const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    url:
+      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -77,20 +88,19 @@ const computedFields = async (z, bundle) => {
       key: 'connection',
       label: 'Connection',
       children: [
-        {key: 'host', required: true, label: 'TiDB Host', default: host},
-        {key: 'port', required: true, label: 'TiDB Port', default: port},
-        {key: 'user', required: true, label: 'TiDB User', default: user},
+        { key: 'host', required: true, label: 'TiDB Host', default: host },
+        { key: 'port', required: true, label: 'TiDB Port', default: port },
+        { key: 'user', required: true, label: 'TiDB User', default: user },
         {
           key: 'tidbPassword',
           required: true,
           type: 'password',
           label: 'TiDB Password',
         },
-      ]
-    }
-
+      ],
+    },
   ]
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -133,8 +143,8 @@ module.exports = {
           altersDynamicFields: true,
           helpText: ' Select your database name!',
         },
-      ]
-    }
+      ],
+    },
   },
 
   create: {
@@ -226,7 +236,7 @@ module.exports = {
   // In this resource, the sample is reused across all methods
   sample: {
     id: 1,
-    name: 'Test'
+    name: 'Test',
   },
 
   // If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels
@@ -234,6 +244,5 @@ module.exports = {
   // https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields
   // Alternatively, a static field definition can be provided, to specify labels for the fields
   // In this resource, these output fields are reused across all resources
-  outputFields: [
-  ]
-};
+  outputFields: [],
+}

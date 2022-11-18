@@ -1,7 +1,6 @@
 // create a particular row by name
-const query = require("../tidb_client/PromiseClient");
+const query = require('../tidb_client/PromiseClient')
 const perform = async (z, bundle) => {
-
   const host = bundle.inputData.host
   const port = bundle.inputData.port
   const user = bundle.inputData.user
@@ -9,42 +8,48 @@ const perform = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database,
-      `show columns from ${table}`)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
   const data = []
-  let values = ""
-  let columns = ""
-  let index = 0;
+  let values = ''
+  let columns = ''
+  let index = 0
   for (let i = 0; i < rows.length; i++) {
     // handle the case when the field is inconsistent. for example, add new column after a zap is created.
     if (bundle.inputData[rows[i].Field] === undefined) {
-      continue;
+      continue
     }
     data[index] = bundle.inputData[rows[i].Field]
     if (index > 0) {
       columns += `,${rows[i].Field}`
-      values += ",?"
+      values += ',?'
     } else {
       columns += `(${rows[i].Field}`
-      values += "(?"
+      values += '(?'
     }
     index++
   }
-  values += ")"
-  columns += ")"
+  values += ')'
+  columns += ')'
 
-  const [_, error2] = await query(host, user, port, tidbPassword,
-      database, `insert into ${table} ${columns} values ${values}`, data)
+  const [_, error2] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `insert into ${table} ${columns} values ${values}`,
+    data,
+  )
   if (error2) {
-    throw new z.errors.Error("Execute SQL error", error2, 400)
+    throw new z.errors.Error('Execute SQL error', error2, 400)
   }
 
   return Object.create(null)
-};
+}
 
 const rowFields = async (z, bundle) => {
   if (bundle.inputData.table === undefined) {
@@ -58,35 +63,35 @@ const rowFields = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database,
-      `show columns from ${table}`)
+  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error("Execute SQL error", error, 400)
+    throw new z.errors.Error('Execute SQL error', error, 400)
   }
 
-  const result = [];
+  const result = []
   for (let i = 0; i < rows.length; i++) {
-    result[i] = {key: rows[i].Field, helpText: rows[i].Type}
+    result[i] = { key: rows[i].Field, helpText: rows[i].Type }
   }
 
   return [{
     key: 'columns',
     label: 'Columns',
-    children: result
+    children: result,
   }]
-};
+}
 
 const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
   const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    url:
+      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     digest: {
       username: bundle.authData.username,
       password: bundle.authData.password,
-    }
-  });
+    },
+  })
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -96,19 +101,19 @@ const computedFields = async (z, bundle) => {
       key: 'connection',
       label: 'Connection',
       children: [
-        {key: 'host', required: true, label: 'TiDB Host', default: host},
-        {key: 'port', required: true, label: 'TiDB Port', default: port},
-        {key: 'user', required: true, label: 'TiDB User', default: user},
+        { key: 'host', required: true, label: 'TiDB Host', default: host },
+        { key: 'port', required: true, label: 'TiDB Port', default: port },
+        { key: 'user', required: true, label: 'TiDB User', default: user },
         {
           key: 'tidbPassword',
           required: true,
           type: 'password',
           label: 'TiDB Password',
         },
-      ]
-    }
+      ],
+    },
   ]
-};
+}
 
 module.exports = {
   // see here for a full list of available properties:
@@ -119,7 +124,7 @@ module.exports = {
   display: {
     label: 'Create Row',
     description: 'Creates a new row.',
-    important: true
+    important: true,
   },
 
   operation: {
@@ -177,6 +182,6 @@ module.exports = {
     // Alternatively, a static field definition can be provided, to specify labels for the fields
     outputFields: [
       // these are placeholders to match the example `perform` above
-    ]
-  }
-};
+    ],
+  },
+}
