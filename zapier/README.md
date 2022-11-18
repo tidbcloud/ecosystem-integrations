@@ -8,6 +8,17 @@ You need nodejs14 and zapier CLI to develop the zapier-tidbcloud.
 
 See [zapier-platform](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md) for more details.
 
+### How to fmt
+
+```
+npm i -g @sane-fmt/wasm32-wasi
+```
+
+```
+cd zapier
+sane-fmt --write
+```
+
 ### How to test
 
 See [test/README.md](test/README.md) for more details.
