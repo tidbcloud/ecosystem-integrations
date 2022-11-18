@@ -6,7 +6,7 @@
 
 ### Enhancements
 
-- `New Row (Custom Query)` trigger can only get the top 10000 results in every fetch. The redundant results will be removed if you return more than 10000 results. 
+- `New Row (Custom Query)` trigger can only get the top 1000000 results in every fetch. The redundant results will be removed if you return more than 1000000 results. 
 - `New Row (Custom Query)` trigger will check if you return an `id` field now. An error will be thrown if you don't return an `id` field.
 
 # 0.1.0
