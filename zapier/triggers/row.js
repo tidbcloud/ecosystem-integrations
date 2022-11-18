@@ -166,7 +166,7 @@ module.exports = {
       },
       {
         key: 'order_by',
-        label: 'order By',
+        label: 'Order By',
         dynamic: 'column.name.name',
         helpText: 'Highly recommended! Usually you want the results to be most recent first so we can skim off only new results, so choose something like date_created or your autoincrement id.',
       },
