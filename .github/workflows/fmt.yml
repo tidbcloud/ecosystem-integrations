@@ -1,5 +1,4 @@
-# this workflow contains fmt,build,ut fot tikv-client
-name: verify
+name: fmt
 
 on:
   push:
