@@ -1,0 +1,19 @@
+name: fmt
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  fmt-zapier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: sane-fmt/action@master
+        with:
+          args: |
+            - --details=diff
+            - --color=always
+            - zapier
