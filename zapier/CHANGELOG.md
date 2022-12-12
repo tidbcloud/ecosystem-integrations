@@ -1,3 +1,10 @@
+# 0.3.0
+
+### Enhancements
+
+- Add help doc link in auth help text.
+- Add user-agent header in TiDB Cloud Open API request.
+
 # 0.2.0
 
 ### Bug Fixes

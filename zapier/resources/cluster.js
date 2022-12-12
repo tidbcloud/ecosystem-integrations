@@ -1,24 +1,23 @@
+const request = require('../tidb_client/TiDBCloudClient')
 // get a list of clusters
 const performList = async (z, bundle) => {
-  const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
-    digest: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
-    },
-  })
+  const response = await request(
+    z,
+    `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
+    bundle.authData.username,
+    bundle.authData.password,
+  )
   return response.data.items
 }
 
 // find a cluster
 const performSearch = async (z, bundle) => {
-  const response = await z.request({
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
-    digest: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
-    },
-  })
+  const response = await request(
+    z,
+    `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
+    bundle.authData.username,
+    bundle.authData.password,
+  )
   for (let i = 0; i < response.data.items.length; i++) {
     if (response.data.items[i].cluster_type === bundle.inputData.clusterType) {
       if (bundle.inputData.clusterName === undefined || response.data.items[i].name === bundle.inputData.clusterName) {
@@ -31,19 +30,23 @@ const performSearch = async (z, bundle) => {
 
 // creates a new cluster
 const performCreate = async (z, bundle) => {
-  const response = await z.request({
-    method: 'POST',
-    url: `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
-    body: {
-      name: bundle.inputData.clusterName,
-      cluster_type: 'DEVELOPER',
-      cloud_provider: 'AWS',
-      region: bundle.inputData.region,
-      config: {
-        root_password: bundle.inputData.tidbPassword,
-      },
+  const body = {
+    name: bundle.inputData.clusterName,
+    cluster_type: 'DEVELOPER',
+    cloud_provider: 'AWS',
+    region: bundle.inputData.region,
+    config: {
+      root_password: bundle.inputData.tidbPassword,
     },
-  })
+  }
+  const response = await request(
+    z,
+    `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters`,
+    bundle.authData.username,
+    bundle.authData.password,
+    'POST',
+    body,
+  )
   return {
     id: response.data.id,
     name: bundle.inputData.clusterName,

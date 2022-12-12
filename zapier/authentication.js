@@ -5,10 +5,10 @@
 // By returning the entire request object, you have access to the request and
 // response data for testing purposes. Your connection label can access any data
 // from the returned response using the `json.` prefix. eg: `{{json.username}}`.
-const test = (z, bundle) =>
-  z.request({
-    url: 'https://api.tidbcloud.com/api/v1beta/projects',
-  })
+const request = require('./tidb_client/TiDBCloudClient')
+const test = (z, bundle) => {
+  return request(z, 'https://api.tidbcloud.com/api/v1beta/projects', bundle.authData.username, bundle.authData.password)
+}
 
 const label = (z, bundle) => {
   return bundle.authData.username
@@ -44,7 +44,7 @@ module.exports = {
         required: true,
         label: 'Public Key',
         helpText:
-          'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key. Copy and save them in a secure location.',
+          'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key. Learn more about how to use TiDB Cloud in our [official doc](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-zapier).',
       },
       {
         key: 'password',
