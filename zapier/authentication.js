@@ -44,14 +44,12 @@ module.exports = {
         required: true,
         label: 'Public Key',
         helpText:
-          'See how to use TiDB Cloud App in our [official doc](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-zapier).',
+          'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key. Learn more about how to use TiDB Cloud in our [official doc](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-zapier).',
       },
       {
         key: 'password',
         required: true,
         label: 'Private Key',
-        helpText:
-          'To create an API key, log in to your [TiDB Cloud console](https://tidbcloud.com/). Navigate to the Organization Settings page, and create an API key. An API key contains a public key and a private key.',
       },
     ],
 
