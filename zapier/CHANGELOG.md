@@ -1,3 +1,9 @@
+## 0.4.0
+
+### Bug Fixes
+
+- Fix the bug that fail to load connection information in Create/Find Row.
+
 ## 0.3.0
 
 ### Enhancements

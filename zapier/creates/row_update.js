@@ -44,7 +44,7 @@ const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
-  const response = request(
+  const response = await request(
     z,
     `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
     bundle.authData.username,
