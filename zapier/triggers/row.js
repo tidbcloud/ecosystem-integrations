@@ -23,7 +23,7 @@ const perform = async (z, bundle) => {
                    where table_name = '${table}'`,
     )
     if (error) {
-      throw new z.errors.Error('Execute SQL error', error, 400)
+      throw new z.errors.Error(`Execute SQL error: ${error}`)
     }
     // use pk/uk or the first key as dedupe_key
     dedupe_key = columns[0].COLUMN_NAME
@@ -54,7 +54,7 @@ const perform = async (z, bundle) => {
                    and COLUMN_NAME = 'id';`,
   )
   if (error2) {
-    throw new z.errors.Error('Execute SQL error', error2, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error2}`)
   }
   let has_id_column = id.length > 0
 
@@ -74,7 +74,7 @@ const perform = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, sql)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   // do dedupe. Zapier will throw error when got a two or more results with the same id

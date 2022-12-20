@@ -19,7 +19,7 @@ const perform = async (z, bundle) => {
     [bundle.inputData.lookup_value],
   )
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   return rows

@@ -11,7 +11,7 @@ const perform = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   let sql = `update ${table} set `
@@ -34,7 +34,7 @@ const perform = async (z, bundle) => {
 
   const [_, error1] = await query(host, user, port, tidbPassword, database, sql)
   if (error1) {
-    throw new z.errors.Error('Execute SQL error', error1, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error1}`)
   }
 
   return Object.create(null)
@@ -87,7 +87,7 @@ const rowFields = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   const result = []

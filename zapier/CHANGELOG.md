@@ -1,3 +1,9 @@
+## 0.5.0
+
+### Enhancements
+
+- Replace the error `Code must be None or str, got dict` to a more readable error. [#7](https://github.com/tidbcloud/ecosystem-integrations/pull/7)
+
 ## 0.4.0
 
 ### Bug Fixes

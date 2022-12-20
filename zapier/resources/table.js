@@ -17,7 +17,7 @@ const performList = async (z, bundle) => {
     `select tidb_table_id,table_name from information_schema.tables where table_schema='${bundle.inputData.database}'`,
   )
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   const result = []
@@ -37,7 +37,7 @@ const performCreate = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, `${bundle.inputData.tableDDL}`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   return Object.create(null)
@@ -60,7 +60,7 @@ const performSearch = async (z, bundle) => {
     `select table_name from information_schema.tables where table_schema='${bundle.inputData.database}' and table_name='${bundle.inputData.table}'`,
   )
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
   if (rows.length !== 0) {
     return [{ table: rows[0].table_name }]

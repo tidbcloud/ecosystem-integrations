@@ -9,7 +9,7 @@ const performList = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, null, `show databases`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   const result = []
@@ -43,7 +43,7 @@ const performCreate = async (z, bundle) => {
     `create database if not exists ${bundle.inputData.database}`,
   )
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
   return {
     database: bundle.inputData.database,
@@ -59,7 +59,7 @@ const performSearch = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, null, `show databases`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
   for (let i = 0; i < rows.length; i++) {
     if (rows[i].Database === bundle.inputData.database) {
