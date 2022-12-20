@@ -9,7 +9,7 @@ const perform = async (z, bundle) => {
 
   const [rows, error] = await queryWithTimeOut(host, user, port, tidbPassword, null, 30, bundle.inputData.query)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   return rows

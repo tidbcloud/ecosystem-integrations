@@ -10,7 +10,7 @@ const perform = async (z, bundle) => {
   const limitQuery = `select * from (${bundle.inputData.query}) as fake_table limit 1000000`
   const [rows, error] = await queryWithTimeOut(host, user, port, tidbPassword, null, 30, limitQuery)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   if (rows.length === 0) {
