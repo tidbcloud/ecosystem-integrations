@@ -642,11 +642,12 @@ export class TiDBCloud implements INodeType {
 			 try {
 				 await createCluster.call(this);
 				 result = {
-					 result: 'Success to create TiDB Serverless cluster.',
+					 result: 'Success',
+					 message: 'Success to create TiDB Cloud Serverless Tier Cluster',
 				 };
 			 } catch (error) {
 				 result = {
-					 result: 'Failed to create TiDB Serverless cluster.',
+					 result: 'Failure',
 					 message: error.message,
 				 };
 			 }
