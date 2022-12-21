@@ -3,7 +3,7 @@ import {IAuthenticateGeneric, ICredentialTestRequest, ICredentialType, INodeProp
 export class TiDBCloudApi implements ICredentialType {
 	name = 'tiDBCloudApi';
 	displayName = 'TiDB Cloud API';
-	documentationUrl = 'https://github.com/Daemonxiao/n8n-nodes-tidb-cloud.git#credentials`';
+	documentationUrl = 'https://github.com/tidbcloud/ecosystem-integrations/n8n-nodes-tidb-cloud.git#credentials`';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Public Key',
