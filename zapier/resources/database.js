@@ -1,5 +1,6 @@
 // get a list of databases
 const query = require('../tidb_client/PromiseClient')
+const request = require('../tidb_client/TiDBCloudClient')
 const performList = async (z, bundle) => {
   const host = bundle.inputData.host
   const port = bundle.inputData.port
@@ -8,7 +9,7 @@ const performList = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, null, `show databases`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   const result = []
@@ -42,7 +43,7 @@ const performCreate = async (z, bundle) => {
     `create database if not exists ${bundle.inputData.database}`,
   )
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
   return {
     database: bundle.inputData.database,
@@ -58,7 +59,7 @@ const performSearch = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, null, `show databases`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
   for (let i = 0; i < rows.length; i++) {
     if (rows[i].Database === bundle.inputData.database) {
@@ -72,14 +73,12 @@ const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
-  const response = await z.request({
-    url:
-      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
-    digest: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
-    },
-  })
+  const response = await request(
+    z,
+    `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    bundle.authData.username,
+    bundle.authData.password,
+  )
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user

@@ -3,7 +3,7 @@
 
 # PreRequisites
 
-- Please go into zapier-tidbcloud directory before test with `cd zapier-tidbcloud`.
+- Please go into zapier-tidbcloud directory before test with `cd zapier`.
 - Please Add a `.env` file in zapier-tidbcloud directory to store your environment variables.
 
 # Auth Test
@@ -63,6 +63,9 @@ TEST_PUBLIC_KEY = fake_public_key
 TEST_PRIVATE_KEY = fake_public_key
 TEST_PROJECTID = fake_project_id
 TEST_CLUSTERID = fake_cluster_id
+TEST_TIDB_HOST = fake_tidb_host
+TEST_TIDB_USER = fake_tidb_user
+TEST_TIDB_PORT = fake_tidb_port
 TEST_TIDB_PASSWORD = fake_tidb_password
 ```
 
@@ -81,6 +84,9 @@ TEST_PUBLIC_KEY = fake_public_key
 TEST_PRIVATE_KEY = fake_public_key
 TEST_PROJECTID = fake_project_id
 TEST_CLUSTERID = fake_cluster_id
+TEST_TIDB_HOST = fake_tidb_host
+TEST_TIDB_USER = fake_tidb_user
+TEST_TIDB_PORT = fake_tidb_port
 TEST_TIDB_PASSWORD = fake_tidb_password
 TEST_DATABASE = fake_databse
 ```
@@ -100,6 +106,9 @@ TEST_PUBLIC_KEY = fake_public_key
 TEST_PRIVATE_KEY = fake_public_key
 TEST_PROJECTID = fake_project_id
 TEST_CLUSTERID = fake_cluster_id
+TEST_TIDB_HOST = fake_tidb_host
+TEST_TIDB_USER = fake_tidb_user
+TEST_TIDB_PORT = fake_tidb_port
 TEST_TIDB_PASSWORD = fake_tidb_password
 TEST_DATABASE = fake_databse
 ```
@@ -119,6 +128,9 @@ TEST_PUBLIC_KEY = fake_public_key
 TEST_PRIVATE_KEY = fake_public_key
 TEST_PROJECTID = fake_project_id
 TEST_CLUSTERID = fake_cluster_id
+TEST_TIDB_HOST = fake_tidb_host
+TEST_TIDB_USER = fake_tidb_user
+TEST_TIDB_PORT = fake_tidb_port
 TEST_TIDB_PASSWORD = fake_tidb_password
 TEST_DATABASE = fake_databse
 ```

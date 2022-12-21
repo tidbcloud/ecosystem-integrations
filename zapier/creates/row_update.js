@@ -1,5 +1,6 @@
 // create a particular row_update by name
 const query = require('../tidb_client/PromiseClient')
+const request = require('../tidb_client/TiDBCloudClient')
 const perform = async (z, bundle) => {
   const host = bundle.inputData.host
   const port = bundle.inputData.port
@@ -10,7 +11,7 @@ const perform = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   let sql = `update ${table} set `
@@ -33,7 +34,7 @@ const perform = async (z, bundle) => {
 
   const [_, error1] = await query(host, user, port, tidbPassword, database, sql)
   if (error1) {
-    throw new z.errors.Error('Execute SQL error', error1, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error1}`)
   }
 
   return Object.create(null)
@@ -43,14 +44,12 @@ const computedFields = async (z, bundle) => {
   if (bundle.inputData.clusterId === undefined) {
     return []
   }
-  const response = await z.request({
-    url:
-      `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
-    digest: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
-    },
-  })
+  const response = await request(
+    z,
+    `https://api.tidbcloud.com/api/v1beta/projects/${bundle.inputData.projectId}/clusters/${bundle.inputData.clusterId}`,
+    bundle.authData.username,
+    bundle.authData.password,
+  )
   const host = response.data.status.connection_strings.standard.host
   const port = response.data.status.connection_strings.standard.port
   const user = response.data.status.connection_strings.default_user
@@ -88,7 +87,7 @@ const rowFields = async (z, bundle) => {
 
   const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
   if (error) {
-    throw new z.errors.Error('Execute SQL error', error, 400)
+    throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
   const result = []

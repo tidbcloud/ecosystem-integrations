@@ -1,12 +1,12 @@
+const request = require('../tidb_client/TiDBCloudClient')
 // get a list of projects
 const performList = async (z, bundle) => {
-  const response = await z.request({
-    url: 'https://api.tidbcloud.com/api/v1beta/projects',
-    digest: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
-    },
-  })
+  const response = await request(
+    z,
+    'https://api.tidbcloud.com/api/v1beta/projects',
+    bundle.authData.username,
+    bundle.authData.password,
+  )
   return response.data.items
 }
 

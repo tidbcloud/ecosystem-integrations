@@ -41,7 +41,7 @@ async function query(host, user, port, password, database, sql, values) {
     const [rows, filed] = await connection.execute(sql, values)
     return [rows, undefined]
   } catch (error) {
-    return [undefined, error]
+    return [undefined, error.message]
   } finally {
     if (connection) {
       await connection.end()

@@ -49,7 +49,7 @@ async function queryWithTimeOut(host, user, port, password, database, timeout, s
     const [rows, filed] = await promisePool.execute(sql, values)
     return [rows, undefined]
   } catch (error) {
-    return [undefined, error]
+    return [undefined, error.message]
   } finally {
     if (promisePool) {
       await promisePool.end()

@@ -1,4 +1,23 @@
-# 0.2.0
+## 0.5.0
+
+### Enhancements
+
+- Replace the error `Code must be None or str, got dict` to a more readable error. [#7](https://github.com/tidbcloud/ecosystem-integrations/pull/7)
+
+## 0.4.0
+
+### Bug Fixes
+
+- Fix the bug that fail to load connection information in Create/Find Row.
+
+## 0.3.0
+
+### Enhancements
+
+- Add help doc link in auth help text.
+- Add user-agent header in TiDB Cloud Open API request.
+
+## 0.2.0
 
 ### Bug Fixes
 
@@ -9,7 +28,7 @@
 - `New Row (Custom Query)` trigger can only get the top 1000000 results in every fetch. The redundant results will be removed if you return more than 1000000 results. 
 - `New Row (Custom Query)` trigger will check if you return an `id` field now. An error will be thrown if you don't return an `id` field.
 
-# 0.1.0
+## 0.1.0
 
 ### New Triggers
 
