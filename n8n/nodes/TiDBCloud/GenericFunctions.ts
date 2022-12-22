@@ -59,7 +59,7 @@ export async function tiDBCloudApiRequest(
 	const options: RequestOptions = {
 		method,
 		headers: { 'User-Agent': `n8n-tidbcloud-integrations/${pjson.version}` },
-		digestAuth: publicKey + ':' +privateKey,
+		digestAuth: publicKey + ':' + privateKey,
 		contentType: 'json',
 		dataType: 'json',
 		data: body,
