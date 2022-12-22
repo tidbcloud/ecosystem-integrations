@@ -1,7 +1,7 @@
 # Example Usage
 
 This workflow allows you to create a TiDB Serverless cluster and insert some data into it. This example usage workflow would use the following nodes.
-- [Start](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.start/)
+- [Manual Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/)
 - [Set](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/)
 - [n8n-nodes-tidb-cloud]()
 
@@ -9,10 +9,9 @@ The final workflow should look like the following image.
 
 ![A workflow with the TiDB Cloud node](../images/workflow.png)
 
-## 1. Start node
+## 1. Manual Trigger
 
-The start node exists by default when you create a new workflow.
-
+Use this node to start a workflow by selecting Execute Workflow.
 
 ## 2. TiDB Cloud node (create a TiDB Serverless cluster)
 
