@@ -1,5 +1,6 @@
 const mysql = require('mysql2')
 const mysql2Timeout = require('mysql2-timeout-additions')
+const pjson = require('../package.json')
 
 function isEmpty(obj) {
   return obj === null || obj === undefined || obj === ''
@@ -35,6 +36,9 @@ async function queryWithTimeOut(host, user, port, password, database, timeout, s
         port: port,
         password: password,
         database: database,
+        connectAttributes: {
+          "program_name": `zapier-tidbcloud-integrations/${pjson.version}`
+        },
         ssl: {
           minVersion: 'TLSv1.2',
           rejectUnauthorized: true,
