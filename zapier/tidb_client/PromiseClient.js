@@ -35,7 +35,7 @@ async function query(host, user, port, password, database, sql, values) {
       password: password,
       database: database,
       connectAttributes: {
-        "program_name": `zapier-tidbcloud-integrations/${pjson.version}`
+        program_name: `zapier-tidbcloud-integrations/${pjson.version}`,
       },
       ssl: {
         minVersion: 'TLSv1.2',
