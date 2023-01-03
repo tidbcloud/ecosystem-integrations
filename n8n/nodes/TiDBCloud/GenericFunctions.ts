@@ -232,6 +232,12 @@ export async function createConnection(this: IExecuteFunctions | ILoadOptionsFun
 		baseCredentials.ssl.minVersion = "TLSv1.2";
 	}
 
+	baseCredentials.connectAttributes = {
+		"_client_name": "mysql2",
+		"_client_version": "2.3.0",
+		"program_name": "n8n-nodes-tidb-cloud",
+	};
+
 	return mysql2.createConnection(baseCredentials);
 }
 
