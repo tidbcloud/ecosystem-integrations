@@ -1,5 +1,7 @@
 # User Guide
 
+See [Integrate TiDB Cloud with Zapier](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-zapier)
+
 # Dev Guide
 
 ### Requirements
@@ -39,7 +41,7 @@ See [Deploying an App Version](https://github.com/zapier/zapier-platform/blob/ma
 2. List the App you can administer
 
 ```
-zapier integration
+zapier integrations
 ```
 
 3. Lists and links a selected app in Zapier to your current folder
@@ -64,4 +66,10 @@ zapier push
 
 ```
 zapier promote ${version}
+```
+
+7. Migrate (migrate a version to a new version)
+
+```
+ zapier migrate ${old_version} ${new_version}
 ```

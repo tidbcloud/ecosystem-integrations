@@ -1,3 +1,9 @@
+## 0.6.0
+
+### Enhancements
+
+- Add connection connectAttributes in mysql2. [#11](https://github.com/tidbcloud/ecosystem-integrations/pull/11)
+
 ## 0.5.0
 
 ### Enhancements
