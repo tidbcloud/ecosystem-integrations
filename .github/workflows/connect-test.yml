@@ -62,6 +62,19 @@ jobs:
       - name: Run test on ${{ matrix.os }}
         run: mysql --connect-timeout 15 -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }} -p${{ secrets.TIDB_CLOUD_PASSWORD }}
 
+  no_tls:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get mysql
+        uses: shogo82148/actions-setup-mysql@v1
+
+      - name: Run test
+        run: ! mysql --connect-timeout 15 -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+
   mycli:
     needs: setup
     strategy:
