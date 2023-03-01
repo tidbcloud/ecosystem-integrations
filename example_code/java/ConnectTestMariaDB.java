@@ -1,6 +1,6 @@
 import java.sql.*;
 
-public class ConnectTest {
+public class ConnectTestMariaDB {
   public static void main(String args[]) throws Exception {
     if(args.length !=3) {
       throw new Error("Usage: java ConnectTest <user> <host> <password>");
