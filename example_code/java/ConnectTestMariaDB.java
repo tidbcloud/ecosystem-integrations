@@ -2,7 +2,7 @@ import java.sql.*;
 
 public class ConnectTestMariaDB {
   public static void main(String args[]) throws Exception {
-    if(args.length !=3) {
+    if (args.length != 3) {
       throw new Error("Usage: java ConnectTest <user> <host> <password>");
     }
     String user = args[0];
@@ -10,7 +10,7 @@ public class ConnectTestMariaDB {
     String password = args[2];
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-          "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full"
+        "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full"
       );
       Statement stmt = conn.createStatement();
       try {
@@ -19,10 +19,10 @@ public class ConnectTestMariaDB {
           System.out.println("using db: " + rs.getString(1));
         }
       } catch (Exception e) {
-          throw e;
+        throw e;
       }
     } catch (Exception e) {
-        throw e;
+      throw e;
     }
   }
 }
