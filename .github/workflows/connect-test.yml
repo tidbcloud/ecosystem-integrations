@@ -119,7 +119,7 @@ jobs:
           java -cp mysql-connector-j-8.0.31.jar； ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
 
   # https://jira.mariadb.org/browse/CONJ-1023
-  java_jdbc_mariadb_3.0.9:
+  java_jdbc_mariadb_CONJ-1023:
     needs: setup
     runs-on: ubuntu-latest
     steps:
