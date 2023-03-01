@@ -132,7 +132,7 @@ jobs:
         run: |
           cd example_code/java
           javac ConnectTest.java
-          java -cp mysql-connector-j-8.0.31.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+          java -cp mariadb-java-client-3.0.9.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
 
   python_mysqlclient:
     needs: setup
