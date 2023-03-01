@@ -3,7 +3,7 @@ import java.sql.*;
 public class ConnectTest {
   public static void main(String args[]) throws Exception {
     if(args.length !=3) {
-      throw new Error("Usage: java TLS_JAVA <host> <port> <database>");
+      throw new Error("Usage: java ConnectTest <user> <host> <password>");
     }
     String user = args[0];
     String host = args[1];

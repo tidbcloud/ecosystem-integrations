@@ -118,6 +118,22 @@ jobs:
           javac ConnectTest.java
           java -cp mysql-connector-j-8.0.31.jar； ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
 
+  # https://jira.mariadb.org/browse/CONJ-1023
+  java_jdbc_mariadb_3.0.9:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+      - name: Run test
+        run: |
+          cd example_code/java
+          javac ConnectTest.java
+          java -cp mysql-connector-j-8.0.31.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
   python_mysqlclient:
     needs: setup
     strategy:
