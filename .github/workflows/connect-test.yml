@@ -75,6 +75,39 @@ jobs:
       - name: Run test
         run: "! mysql --connect-timeout 15 -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
 
+  tlsv1:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get mysql
+        uses: shogo82148/actions-setup-mysql@v1
+
+      - name: Run test
+        run: |
+          # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
+          pip3 install mysql-connector-python==8.0.25
+          cd example_code/python
+          "! python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt TLSv1"
+
+  tlsv1_1:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get mysql
+        uses: shogo82148/actions-setup-mysql@v1
+
+      - name: Run test
+        run: |
+          pip3 install mysql-connector-python==8.0.25
+          cd example_code/python
+          "! python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt TLSv1.1"
+
   mycli:
     needs: setup
     strategy:
