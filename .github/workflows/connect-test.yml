@@ -110,7 +110,7 @@ jobs:
         run: |
           pip3 install mysql-connector-python
           cd example_code/python
-          python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   mycli:
     needs: setup
