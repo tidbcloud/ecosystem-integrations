@@ -75,37 +75,42 @@ jobs:
       - name: Run test
         run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
 
-  tlsv1:
+  invalid_tls_version:
     needs: setup
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tls: [ TLSv1, TLSv1.1 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Run test
+      - name: Run test on ${{ matrix.tls }}
         run: |
           # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
           pip3 install mysql-connector-python==8.0.25
           cd example_code/python
-          ! python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt TLSv1
+          ! python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
-  tlsv1_1:
+  valid_tls_version:
     needs: setup
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tls: [ TLSv1.2, TLSv1.3 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Run test
+      - name: Run test on ${{ matrix.tls }}
         run: |
-          # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
-          pip3 install mysql-connector-python==8.0.25
+          pip3 install mysql-connector-python
           cd example_code/python
-          ! python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt TLSv1.1
+          python3 invalid_tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   mycli:
     needs: setup
