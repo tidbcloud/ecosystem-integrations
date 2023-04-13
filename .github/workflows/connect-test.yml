@@ -60,7 +60,7 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test on ${{ matrix.os }}
-        run: mysql --connect-timeout 15 -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }} -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }} -p${{ secrets.TIDB_CLOUD_PASSWORD }}
 
   no_tls:
     needs: setup
@@ -73,7 +73,44 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test
-        run: "! mysql --connect-timeout 15 -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
+        run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
+
+  invalid_tls_version:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tls: [ TLSv1, TLSv1.1 ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run test on ${{ matrix.tls }}
+        run: |
+          # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
+          pip3 install mysql-connector-python==8.0.25
+          cd example_code/python
+          ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+
+  valid_tls_version:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tls: [ TLSv1.2, TLSv1.3 ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run test on ${{ matrix.tls }}
+        run: |
+          pip3 install mysql-connector-python
+          cd example_code/python
+          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   mycli:
     needs: setup
@@ -336,7 +373,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: ATiltedTree/setup-rust@v1
