@@ -12,13 +12,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
         with:
           api_public_key: ${{ secrets.TLS_PUBLIC_KEY }}
           api_private_key: ${{ secrets.TLS_PRIVATE_KEY }}
-      
+
       - name: Get Connection Info
         run: |
           # delete cluster if exists
@@ -210,6 +210,7 @@ jobs:
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
+          pip3 install -U wheel
           pip3 install mysqlclient
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
@@ -289,6 +290,7 @@ jobs:
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
+          pip3 install -U wheel
           pip3 install mysqlclient
           pip3 install sqlalchemy
           cd example_code/sqlalchemy
