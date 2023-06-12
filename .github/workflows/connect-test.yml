@@ -206,7 +206,7 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install mysql@8.0.32  # https://github.com/Homebrew/homebrew-core/issues/130258
+          brew install --HEAD mysql  # https://github.com/Homebrew/homebrew-core/issues/130258
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -286,7 +286,7 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install mysql@8.0.32
+          brew install --HEAD mysql
       - name: Run test on ${{ matrix.os }}
         run: |
           pip3 install mysqlclient
@@ -400,7 +400,7 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install mysql@8.0.32
+          brew install --HEAD mysql
           cd example_code/ruby
           gem install mysql2
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
