@@ -210,8 +210,7 @@ jobs:
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
-          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
-          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
+          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
           pip3 install mysqlclient
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
@@ -291,8 +290,7 @@ jobs:
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
-          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
-          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
+          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
           pip3 install mysqlclient
           pip3 install sqlalchemy
           cd example_code/sqlalchemy
