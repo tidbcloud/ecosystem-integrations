@@ -210,7 +210,7 @@ jobs:
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install -U wheel
+          xcode-select --install
           pip3 install mysqlclient
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
@@ -290,7 +290,7 @@ jobs:
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install -U wheel
+          xcode-select --install
           pip3 install mysqlclient
           pip3 install sqlalchemy
           cd example_code/sqlalchemy
@@ -402,6 +402,7 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          xcode-select --install
           brew install mysql
           cd example_code/ruby
           gem install mysql2
