@@ -210,7 +210,8 @@ jobs:
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
-          xcode-select --install
+          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
+          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
           pip3 install mysqlclient
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
@@ -290,7 +291,8 @@ jobs:
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
-          xcode-select --install
+          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
+          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
           pip3 install mysqlclient
           pip3 install sqlalchemy
           cd example_code/sqlalchemy
@@ -402,10 +404,9 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          xcode-select --install
           brew install mysql
           cd example_code/ruby
-          gem install mysql2
+          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
