@@ -2,7 +2,7 @@ name: Serverless Connect Test
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # 0:00 UTC every day
+    - cron: "*/30 * * * *"  # every  30 minutes
   workflow_dispatch:
 
 jobs:
@@ -12,13 +12,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
         with:
           api_public_key: ${{ secrets.TLS_PUBLIC_KEY }}
           api_private_key: ${{ secrets.TLS_PRIVATE_KEY }}
-      
+
       - name: Get Connection Info
         run: |
           # delete cluster if exists
@@ -206,6 +206,8 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          # https://github.com/Homebrew/homebrew-core/issues/130258
+          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
           brew install mysql
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
@@ -286,6 +288,8 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          # https://github.com/Homebrew/homebrew-core/issues/130258
+          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -402,7 +406,8 @@ jobs:
         run: |
           brew install mysql
           cd example_code/ruby
-          gem install mysql2
+          # https://github.com/Homebrew/homebrew-core/issues/130258
+          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
