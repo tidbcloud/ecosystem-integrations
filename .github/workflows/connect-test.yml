@@ -206,7 +206,7 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install --HEAD mysql  # https://github.com/Homebrew/homebrew-core/issues/130258
+          brew install --devel mysql  # https://github.com/Homebrew/homebrew-core/issues/130258
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
