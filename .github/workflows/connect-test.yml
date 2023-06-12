@@ -206,6 +206,7 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          xcode-select --install
           brew install mysql
           export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
@@ -286,6 +287,7 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          xcode-select --install
           brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -400,6 +402,7 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          xcode-select --install
           brew install mysql
           cd example_code/ruby
           gem install mysql2
