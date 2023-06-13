@@ -2,7 +2,7 @@ name: Serverless Connect Test
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # every  30 minutes
+    - cron: "0 */1 * * *"  # every hour
   workflow_dispatch:
 
 jobs:

@@ -11,15 +11,40 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Notify to Lark
-          uses: echoings/actions.notify@v0.1.0
-          with:
-            plat_type: 'Lark'
-            notify_title: 'Serverless Connection Test Failed in ${{ github.event.workflow_run.repository.name }}'
-            notify_message: 'See details here https://github.com/tidbcloud/ecosystem-integrations/actions'
-          env:
-            NOTIFY_WEBHOOK: ${{ secrets.NOTIFY_WEBHOOK }}
-
-
+      - name: Send Notification
+        uses: northwang-lucky/chatbot-webhook-client@v1.1.1
+        with:
+          app: Lark
+          webhook: ${{ secrets.NOTIFY_WEBHOOK }}
+          template: >-
+            {
+                "msg_type": "interactive",
+                "card": {
+                    "elements": [{
+                            "tag": "div",
+                            "text": {
+                                    "content": "**Message** \nServerless connection test failed",
+                                    "tag": "lark_md"
+                            }
+                    }, {
+                            "actions": [{
+                                    "tag": "button",
+                                    "text": {
+                                            "content": "More information",
+                                            "tag": "lark_md"
+                                    },
+                                    "url": "https://github.com/tidbcloud/ecosystem-integrations/actions/workflows/connect-test.yml",
+                                    "type": "default",
+                                    "value": {}
+                            }],
+                            "tag": "action"
+                    }],
+                    "header": {
+                            "title": {
+                                    "content": "Ecosystem Integrations Notify",
+                                    "tag": "plain_text"
+                            },
+                            "template": "red"
+                    }
+                }
+            }
