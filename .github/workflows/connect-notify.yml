@@ -1,0 +1,25 @@
+name: Serverless Connect Notify
+
+on:
+  workflow_run:
+    workflows: ["Serverless Connect Test"]
+    types:
+      - completed
+
+jobs:
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Notify to Lark
+          uses: echoings/actions.notify@v0.1.0
+          with:
+            plat_type: 'Lark'
+            notify_title: 'Serverless Connection Test Failed in ${{ github.event.workflow_run.repository.name }}'
+            notify_message: 'See details here https://github.com/tidbcloud/ecosystem-integrations/actions'
+          env:
+            NOTIFY_WEBHOOK: ${{ secrets.NOTIFY_WEBHOOK }}
+
+
