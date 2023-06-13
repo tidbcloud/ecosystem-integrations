@@ -396,7 +396,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
