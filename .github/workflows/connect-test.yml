@@ -2,7 +2,7 @@ name: Serverless Connect Test
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # every  30 minutes
+    - cron: "0 */1 * * *"  # every hour
   workflow_dispatch:
 
 jobs:
@@ -380,9 +380,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
-      - uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
+      - uses: moonrepo/setup-rust@v0
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/rust
@@ -394,7 +392,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1

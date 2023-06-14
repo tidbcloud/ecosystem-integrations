@@ -11,8 +11,8 @@ fn main() {
 
     let database_url = format!("mysql://{}:{}@{}:4000/test", &user, &password, &host);
 
-    let sslOpts = SslOpts::default();
-    let builder = OptsBuilder::from_opts(Opts::from_url(&database_url).unwrap()).ssl_opts(sslOpts);
+    let ssl_opts = SslOpts::default();
+    let builder = OptsBuilder::from_opts(Opts::from_url(&database_url).unwrap()).ssl_opts(ssl_opts);
     let pool = Pool::new(builder).unwrap();
 
     let mut conn = pool.get_conn().unwrap();

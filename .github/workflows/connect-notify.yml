@@ -1,0 +1,50 @@
+name: Serverless Connect Notify
+
+on:
+  workflow_run:
+    workflows: ["Serverless Connect Test"]
+    types:
+      - completed
+
+jobs:
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Send Notification
+        uses: northwang-lucky/chatbot-webhook-client@v1.1.1
+        with:
+          app: Lark
+          webhook: ${{ secrets.NOTIFY_WEBHOOK }}
+          template: >-
+            {
+                "msg_type": "interactive",
+                "card": {
+                    "elements": [{
+                            "tag": "div",
+                            "text": {
+                                    "content": "**Message** \nServerless connection test failed",
+                                    "tag": "lark_md"
+                            }
+                    }, {
+                            "actions": [{
+                                    "tag": "button",
+                                    "text": {
+                                            "content": "More information",
+                                            "tag": "lark_md"
+                                    },
+                                    "url": "https://github.com/tidbcloud/ecosystem-integrations/actions/workflows/connect-test.yml",
+                                    "type": "default",
+                                    "value": {}
+                            }],
+                            "tag": "action"
+                    }],
+                    "header": {
+                            "title": {
+                                    "content": "Ecosystem Integrations Notify",
+                                    "tag": "plain_text"
+                            },
+                            "template": "red"
+                    }
+                }
+            }
