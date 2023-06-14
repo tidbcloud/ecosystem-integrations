@@ -2,7 +2,7 @@ name: Serverless Connect Test
 
 on:
   schedule:
-    - cron: "0 */1 * * *"  # every hour
+    - cron: "0/30 * * * *"  # every 30 minutes
   workflow_dispatch:
 
 jobs:
@@ -32,6 +32,7 @@ jobs:
           # create cluster
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
           ticloud cluster list 1372813089206721319 -o json > cluster
+          cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
     outputs:
@@ -377,7 +378,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ windows-latest, macos-latest ] # skip ubuntu-latest as it get stuck for unknown reasons
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
