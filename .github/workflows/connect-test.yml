@@ -380,9 +380,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
-      - uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
+      - uses: moonrepo/setup-rust@v0
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/rust
