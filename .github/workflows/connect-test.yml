@@ -1,14 +1,17 @@
-name: Serverless Connect Test
+name: Serverless Connect Test2
 
 on:
   schedule:
     - cron: "0/30 * * * *"  # every 30 minutes
   workflow_dispatch:
 
+env:
+  CONNECT_TEST_TIMEOUT: 10
+
 jobs:
   setup:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -52,7 +55,7 @@ jobs:
           - os: windows-latest
             cert: ./example_code/x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -66,7 +69,7 @@ jobs:
   no_tls:
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -80,7 +83,7 @@ jobs:
   invalid_tls_version:
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     strategy:
       matrix:
         tls: [ TLSv1, TLSv1.1 ]
@@ -100,7 +103,7 @@ jobs:
   valid_tls_version:
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     strategy:
       matrix:
         tls: [ TLSv1.2, TLSv1.3 ]
@@ -129,7 +132,7 @@ jobs:
           - os: windows-latest
             cert: ./example_code/x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -150,7 +153,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -176,7 +179,7 @@ jobs:
   java_jdbc_mariadb_CONJ-1023:
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -202,7 +205,7 @@ jobs:
           - os: windows-latest
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -234,7 +237,7 @@ jobs:
           - os: windows-latest
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -259,7 +262,7 @@ jobs:
           - os: windows-latest
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -284,7 +287,7 @@ jobs:
           - os: windows-latest
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -309,7 +312,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
@@ -327,7 +330,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
@@ -345,7 +348,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -363,7 +366,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -382,7 +385,7 @@ jobs:
       matrix:
         os: [ windows-latest, macos-latest ] # skip ubuntu-latest as it get stuck for unknown reasons
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: moonrepo/setup-rust@v0
@@ -397,7 +400,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
@@ -432,7 +435,7 @@ jobs:
           - os: windows-latest
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
@@ -455,7 +458,7 @@ jobs:
           - os: macos-latest
             cert: /etc/ssl/cert.pem
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ vars.CONNECT_TEST_TIMEOUT }}
+    timeout-minutes: echo ${{ CONNECT_TEST_TIMEOUT }}
     steps:
       - uses: actions/checkout@v3
       - uses: rlalik/setup-cpp-compiler@v1.2
