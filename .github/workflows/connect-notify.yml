@@ -9,7 +9,7 @@ on:
 jobs:
   notify-on-failure:
     runs-on: ubuntu-latest
-  #  if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - name: Send Notification
         uses: northwang-lucky/chatbot-webhook-client@v1.1.1
@@ -23,7 +23,7 @@ jobs:
                     "elements": [{
                             "tag": "div",
                             "text": {
-                                    "content": "**Message** \nServerless connection test failed",
+                                    "content": "**Message** \nServerless connection test #${{ github.event.workflow_run.run_number }} failed",
                                     "tag": "lark_md"
                             }
                     }, {
@@ -33,7 +33,7 @@ jobs:
                                             "content": "More information",
                                             "tag": "lark_md"
                                     },
-                                    "url": ${{ github.event.workflow_run.html_url }}
+                                    "url": "${{ github.event.workflow_run.html_url }}",
                                     "type": "default",
                                     "value": {}
                             }],
