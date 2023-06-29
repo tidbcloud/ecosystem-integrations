@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -43,13 +43,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ./example_code/x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -65,7 +65,7 @@ jobs:
 
   no_tls:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -79,7 +79,7 @@ jobs:
 
   invalid_tls_version:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -99,7 +99,7 @@ jobs:
 
   valid_tls_version:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -120,13 +120,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ./example_code/x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -148,7 +148,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -158,14 +158,14 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
       - name: Run test on ubuntu or macos
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ matrix.os != 'windows-2022' }}
         run: |
           cd example_code/java
           javac ConnectTest.java
           java -cp mysql-connector-j-8.0.31.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
 
       - name: Run test on windows
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows-2022' }}
         # Need to use Chinese semicolon and an extra space before ConnectTest （don't know why）
         run: |
           cd example_code/java
@@ -175,7 +175,7 @@ jobs:
   # https://jira.mariadb.org/browse/CONJ-1023
   java_jdbc_mariadb_CONJ-1023:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
@@ -193,13 +193,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -209,7 +209,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-12' }}
         run: |
           # https://github.com/Homebrew/homebrew-core/issues/130258
           ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
@@ -225,13 +225,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -250,13 +250,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -275,13 +275,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -291,7 +291,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-12' }}
         run: |
           # https://github.com/Homebrew/homebrew-core/issues/130258
           ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
@@ -307,7 +307,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -325,7 +325,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -343,7 +343,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -361,7 +361,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -380,7 +380,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest ] # skip ubuntu-latest as it get stuck for unknown reasons
+        os: [ windows-2022, macos-12 ] # skip ubuntu-22.04 as it get stuck for unknown reasons
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -395,7 +395,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ] # install mysql2 in windows is a little difficult, dismiss it for now
+        os: [ ubuntu-22.04, macos-12 ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -405,7 +405,7 @@ jobs:
           ruby-version: '3.0' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install mysql on macos
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-12' }}
         run: |
           brew install mysql
           cd example_code/ruby
@@ -413,7 +413,7 @@ jobs:
           gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           cd example_code/ruby
           gem install mysql2
@@ -423,13 +423,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-2022, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
-          - os: windows-latest
+          - os: windows-2022
             cert: ../x1.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -448,11 +448,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-22.04, macos-12 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-latest
+          - os: macos-12
             cert: /etc/ssl/cert.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -460,14 +460,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: rlalik/setup-cpp-compiler@v1.2
       - name: Run test on macos
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-12' }}
         run: |
           brew install mysql
           cd example_code/cpp
           g++ ConnectTest.cpp -o test -I/usr/local/include/mysql -lmysqlclient
           ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt install -y libmysqlclient-dev
           cd example_code/cpp
