@@ -34,7 +34,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        region: [ us-east-1] # [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
+        region: [ us-east-1 ] # [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
@@ -79,5 +79,5 @@ jobs:
 
       - name: Delete cluster & branch
         run: |
-          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.CLUSTER_ID }} --force
+          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.BRANCH_ID }} --force
           ticloud cluster delete -p ${{ env.PROJECT_ID }} -c ${{ env.CLUSTER_ID }} --force
