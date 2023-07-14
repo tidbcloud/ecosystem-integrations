@@ -63,10 +63,10 @@ jobs:
         run: |
           ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
           cat ${{ matrix.region }}
-#          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
-#          cat ${{ matrix.region }}
-#
-#          echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
+          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
+          cat ${{ matrix.region }}
+
+          echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
 #          echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
 #          echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
 
