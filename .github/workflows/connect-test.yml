@@ -79,5 +79,4 @@ jobs:
 
       - name: Delete cluster & branch
         run: |
-#          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.BRANCH_ID }} --force
           ticloud cluster delete -p ${{ env.PROJECT_ID }} -c ${{ env.CLUSTER_ID }} --force
