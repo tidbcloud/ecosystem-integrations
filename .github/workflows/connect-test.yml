@@ -61,7 +61,8 @@ jobs:
 
       - name: Create branch
         run: |
-          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
+          ticloud branch list -c ${{ env.CLUSTER_ID }}
+#          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
 #          cat ${{ matrix.region }}
 #          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
 #          cat ${{ matrix.region }}
