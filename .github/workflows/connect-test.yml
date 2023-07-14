@@ -58,10 +58,11 @@ jobs:
           echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
           echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
+          sleep 5
 
       - name: Create branch
         run: |
-          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
+          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}
 #          cat ${{ matrix.region }}
 #          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
 #          cat ${{ matrix.region }}
