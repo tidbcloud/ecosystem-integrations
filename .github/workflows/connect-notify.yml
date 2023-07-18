@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows:
       - "Serverless Connect Test"
-      - "Serverless Compatibility Test"
+      - "Serverless Driver Compatibility Test"
     types:
       - completed
 

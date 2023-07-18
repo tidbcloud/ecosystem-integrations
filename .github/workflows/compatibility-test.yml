@@ -1,4 +1,4 @@
-name: Serverless Compatibility Test
+name: Serverless Driver Compatibility Test
 
 on:
   schedule:
