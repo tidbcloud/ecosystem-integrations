@@ -20,7 +20,7 @@ func main() {
 		ServerName: host,
 	})
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb", user, password, host))
+    db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=program_name:pingcap/serverless-test", user, password, host))
 	if err != nil {
 		log.Fatal("failed to connect database", err)
 	}

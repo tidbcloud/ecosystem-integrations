@@ -10,7 +10,7 @@ public class ConnectTestMariaDB {
     String password = args[2];
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-        "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full"
+        "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full&connectionAttributes=program_name:pingcap/serverless-test"
       );
       Statement stmt = conn.createStatement();
       try {
