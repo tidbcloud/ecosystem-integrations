@@ -17,8 +17,8 @@ jobs:
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
         with:
-          api_public_key: ${{ secrets.CONNECT_PUBLIC_KEY }}
-          api_private_key: ${{ secrets.CONNECT_PRIVATE_KEY }}
+          api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY }}
+          api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
       - name: Delete all serverless
         run: |
