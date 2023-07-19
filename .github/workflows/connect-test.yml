@@ -19,11 +19,11 @@ jobs:
 
       - name: connect cluster
         run: |
-          mysql --connect-timeout 15 -u '2MLQsKRhdXQCjHb.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
-          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
-          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
-          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
-          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY
+          mysql --connect-timeout 15 -u '2MLQsKRhdXQCjHb.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
 
       - name: connect branch
         run: |
