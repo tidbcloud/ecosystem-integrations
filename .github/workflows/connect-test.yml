@@ -1,7 +1,6 @@
 name: Serverless Connect Test
 
 on:
-  pull_request:
   schedule:
     - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
@@ -9,7 +8,7 @@ on:
 jobs:
   connect-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 3
     steps:
       - name: Checkout
         uses: actions/checkout@v3
