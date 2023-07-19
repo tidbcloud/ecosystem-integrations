@@ -1,7 +1,6 @@
 name: Serverless Connect Test
 
 on:
-  pull_request:
   schedule:
     - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
@@ -17,6 +16,10 @@ jobs:
       - name: Setup mysql
         uses: shogo82148/actions-setup-mysql@v1
 
-      - name: connect
+      - name: connect cluster
         run: |
-          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}  
+          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+
+      - name: connect branch
+        run: |
+          mysql --connect-timeout 15 -u '4RCpNUuWxmFv2Ju.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_BRANCH_PSWD }}
