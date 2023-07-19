@@ -1,4 +1,4 @@
-name: Serverless Connect Test1
+name: Serverless Connect Test
 
 on:
   schedule:
