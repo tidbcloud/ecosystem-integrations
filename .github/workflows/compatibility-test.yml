@@ -1,6 +1,7 @@
 name: Serverless Driver Compatibility Test
 
 on:
+  pull_request:
   schedule:
     - cron: "0 22 * * *"  # every day at 22:00
   workflow_dispatch:

@@ -1,6 +1,7 @@
 name: Serverless Connect Test
 
 on:
+  pull_request:
   schedule:
     - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
