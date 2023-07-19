@@ -1,8 +1,11 @@
-name: Serverless Connect Notify
+name: Serverless Test Notify
 
 on:
   workflow_run:
-    workflows: ["Serverless Connect Test"]
+    workflows:
+      - "Serverless Connect Test"
+      - "Serverless Driver Compatibility Test"
+      - "Serverless Create Test"
     types:
       - completed
 
@@ -23,7 +26,7 @@ jobs:
                     "elements": [{
                             "tag": "div",
                             "text": {
-                                    "content": "**Message** \nServerless connection test #${{ github.event.workflow_run.run_number }} failed",
+                                    "content": "**Message** \n${{ github.event.workflow_run.name}} #${{ github.event.workflow_run.run_number }} failed",
                                     "tag": "lark_md"
                             }
                     }, {
