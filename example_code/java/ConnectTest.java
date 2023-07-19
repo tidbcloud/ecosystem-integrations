@@ -10,7 +10,7 @@ public class ConnectTest {
     String password = args[2];
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-        "jdbc:mysql://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3"
+        "jdbc:mysql://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3&connectionAttributes=program_name:pingcap/serverless-test"
       );
       Statement stmt = conn.createStatement();
       try {

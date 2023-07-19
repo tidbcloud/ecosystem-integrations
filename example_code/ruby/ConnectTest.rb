@@ -12,6 +12,7 @@ begin
         port: 4000,
         database: 'test',
         ssl_mode: :verify_ca,
+        connect_attrs: {'program_name' => 'pingcap/serverless-test'},
     )
 
     result = client.query('SHOW DATABASES')
