@@ -23,11 +23,17 @@ jobs:
         run: |
           # delete cluster if exists
           ticloud cluster list 1372813089206721319 -o json > cluster
-          if [ $(jq '.total' cluster) == 1 ];
-          then
-          id=`echo $(jq '.items[0].id' cluster) | sed 's/"//g'`
-          ticloud cluster delete -p 1372813089206721319 -c $id --force;
+          total=$(jq '.total' cluster);
+          for i in $(seq 1 $total);
+          do
+          name=`echo $(jq ".items[$i-1].name" cluster)`
+          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
+          echo $name
+          echo $id
+          if [[ $name != *"connect-test"* ]]; then
+            ticloud cluster delete -p 1372813089206721319 -c $id --force;
           fi
+          done
 
           # create cluster
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;

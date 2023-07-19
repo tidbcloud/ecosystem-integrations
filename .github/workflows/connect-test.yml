@@ -1,83 +1,21 @@
-name: Serverless Connect Test
+name: Serverless Connect Test1
 
 on:
   schedule:
-    - cron: "0/30 * * * *"  # every 30 minutes
+    - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set up ticloud
-        uses: tidbcloud/setup-tidbcloud-cli@v0
-        with:
-          api_public_key: ${{ secrets.CONNECT_PUBLIC_KEY }}
-          api_private_key: ${{ secrets.CONNECT_PRIVATE_KEY }}
-
-      - name: Delete all serverless
-        run: |
-          # delete all serverless
-          ticloud cluster list 1372813089447741295 -o json > cluster
-          total=$(jq '.total' cluster);
-          for i in $(seq 1 $total);
-          do
-          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-          ticloud cluster delete -p 1372813089447741295 -c $id --force;
-          done
-
   connect-test:
-    needs: setup
-    strategy:
-      matrix:
-        region: [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 3
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up ticloud
-        uses: tidbcloud/setup-tidbcloud-cli@v0
-        with:
-          api_public_key: ${{ secrets.CONNECT_PUBLIC_KEY }}
-          api_private_key: ${{ secrets.CONNECT_PRIVATE_KEY }}
-
-      - name: Create cluster
-        run: |
-          PROJECT_ID=1372813089447741295
-          ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-          ticloud cluster get -p $PROJECT_ID -c `cat ${{ matrix.region }} | sed 's/[^0-9]//g'` > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-          echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
-          echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
-          echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
-
-      - name: Create branch
-        run: |
-          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-
-          echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
-          echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
-          echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
 
       - name: Setup mysql
         uses: shogo82148/actions-setup-mysql@v1
 
-      - name: Run test
-        run: | 
-          mysql -u ${{ env.CLUSTER_USER }} -h ${{ env.CLUSTER_HOST }} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
-
-      - name: Delete cluster & branch
+      - name: connect
         run: |
-          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.BRANCH_ID }} --force
-          ticloud cluster delete -p ${{ env.PROJECT_ID }} -c ${{ env.CLUSTER_ID }} --force
+          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p${{ secrets.CONNECT_TEST_PSWD }}  

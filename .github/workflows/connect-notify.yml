@@ -1,10 +1,11 @@
-name: Serverless Connect Notify
+name: Serverless Test Notify
 
 on:
   workflow_run:
     workflows:
       - "Serverless Connect Test"
       - "Serverless Driver Compatibility Test"
+      - "Serverless Create Test"
     types:
       - completed
 
