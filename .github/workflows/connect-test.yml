@@ -1,6 +1,7 @@
 name: Serverless Connect Test
 
 on:
+  pull_request:
   schedule:
     - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
@@ -18,8 +19,16 @@ jobs:
 
       - name: connect cluster
         run: |
-          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+          mysql --connect-timeout 15 -u '2MLQsKRhdXQCjHb.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}
+          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY
 
       - name: connect branch
         run: |
-          mysql --connect-timeout 15 -u '4RCpNUuWxmFv2Ju.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_BRANCH_PSWD }}
+          mysql --connect-timeout 15 -u '3PPnE7BsLfHX5qW.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_EU_CENTRAL_1 }}
+          mysql --connect-timeout 15 -u 'pSs1wenmQSbzevk.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_SOUTHEAST_1 }}
+          mysql --connect-timeout 15 -u '2NZSvbxdPaNdeNq.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_EAST_1 }}
+          mysql --connect-timeout 15 -u '3JwPQ7c8B1Bva6f.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_NORTHEAST_1 }}
+          mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_WEST_2 }}

@@ -26,13 +26,8 @@ jobs:
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
-          name=`echo $(jq ".items[$i-1].name" cluster)`
           id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-          echo $name
-          echo $id
-          if [[ $name != *"connect-test"* ]]; then
-            ticloud cluster delete -p 1372813089206721319 -c $id --force;
-          fi
+          ticloud cluster delete -p 1372813089206721319 -c $id --force;
           done
 
           # create cluster
