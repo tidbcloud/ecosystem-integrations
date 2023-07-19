@@ -18,4 +18,4 @@ jobs:
 
       - name: connect
         run: |
-          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p${{ secrets.CONNECT_TEST_PSWD }}  
+          mysql -u '4TNwCHfJvXJxs4v.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CONNECT_TEST_PSWD }}  
