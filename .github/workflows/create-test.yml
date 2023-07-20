@@ -37,7 +37,6 @@ jobs:
           ticloud cluster delete -p 1372813089447741295 -c $id --force;
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo "delete cluster failed"
             exit "$exitcode"
           fi
           done

@@ -37,7 +37,6 @@ jobs:
           ticloud cluster delete -p 1372813089206721319 -c $id --force;
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo "delete cluster failed"
             exit "$exitcode"
           fi
           done
@@ -46,7 +45,6 @@ jobs:
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo "create cluster failed"
             exit "$exitcode"
           fi
           
