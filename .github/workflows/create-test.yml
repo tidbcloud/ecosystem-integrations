@@ -65,28 +65,25 @@ jobs:
           set +e
           PROJECT_ID=1372813089447741295
           result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
-          echo $result
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
+            echo $result
             exit "$exitcode"
           fi
+          echo $result
           
           id=`echo $result | sed 's/[^0-9]//g'`
           ticloud cluster get -p $PROJECT_ID -c $id > ${{ matrix.region }}
-          cat ${{ matrix.region }}
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
+            cat ${{ matrix.region }}
             exit "$exitcode"
           fi
+          cat ${{ matrix.region }}
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
           echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
           echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
-          
-          exitcode="$?"
-          if [[ "$exitcode" != "0" ]]; then
-            exit "$exitcode"
-          fi
 
 #      - name: Create branch
 #        run: |
