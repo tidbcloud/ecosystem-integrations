@@ -23,14 +23,13 @@ jobs:
         run: |
           # delete cluster if exists
           set +e
-          result=`ticloud cluster list 1372813089206721319 -o json`
+          ticloud cluster list 1372813089206721319 -o json > cluster
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
+            cat cluster
             exit "$exitcode"
           fi
           
-          echo $result > cluster
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
@@ -52,14 +51,13 @@ jobs:
           fi
           
           # get connection info
-          result=`ticloud cluster list 1372813089206721319 -o json`
+          ticloud cluster list 1372813089206721319 -o json > cluster
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
+            cat cluster
             exit "$exitcode"
           fi
           
-          echo $result > cluster
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
