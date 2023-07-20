@@ -51,7 +51,7 @@ jobs:
       - name: Create cluster
         run: |
           PROJECT_ID=1372813089447741295
-          echo `ticloud cluster create -p  $PROJECT_ID --cluster-name test --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
+          ticloud cluster create -p  $PROJECT_ID --cluster-name test --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS
 #          echo $result
 #          ticloud cluster get -p $PROJECT_ID -c `echo $result | sed 's/[^0-9]//g'` > ${{ matrix.region }}
 #          cat ${{ matrix.region }}
