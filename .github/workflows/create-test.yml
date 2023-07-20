@@ -1,9 +1,9 @@
 name: Serverless Create Test1
 
 on:
-  pull-request:
-  schedule:
-    - cron: "0/30 * * * *"  # every 30 minutes
+  pull_request:
+#  schedule:
+#    - cron: "0/30 * * * *"  # every 30 minutes
   workflow_dispatch:
 
 jobs:
