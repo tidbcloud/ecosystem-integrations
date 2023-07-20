@@ -53,12 +53,24 @@ jobs:
           PROJECT_ID=1372813089447741295
           result=$(echo `ticloud cluster create -p  $PROJECT_ID --cluster-name test --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`)
           echo $result
-#          ticloud cluster get -p $PROJECT_ID -c `echo $result | sed 's/[^0-9]//g'` > ${{ matrix.region }}
-#          cat ${{ matrix.region }}
-#          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-#          echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
-#          echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
-#          echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
+          
+          id=`echo $result | sed 's/[^0-9]//g'`
+          if [[ $result == "Error:"* ]]; then
+            echo "create cluster failed"
+            exit 1
+          fi
+          
+          result=$(echo `ticloud cluster get -p $PROJECT_ID -c $id`)
+          echo $result
+          if [[ $result == "Error:"* ]]; then
+            echo "get cluster failed"
+            exit 1
+          fi
+        
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          echo "CLUSTER_ID=`echo $(jq '.id' $result) | sed 's/"//g'`" >> $GITHUB_ENV
+          echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' $result)" >> $GITHUB_ENV
+          echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' $result)" >> $GITHUB_ENV
 
 #      - name: Create branch
 #        run: |
