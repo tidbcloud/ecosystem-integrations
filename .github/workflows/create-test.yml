@@ -20,16 +20,16 @@ jobs:
           api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY }}
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
-      - name: Delete all serverless
-        run: |
-          # delete all serverless
-          ticloud cluster list 1372813089447741295 -o json > cluster
-          total=$(jq '.total' cluster);
-          for i in $(seq 1 $total);
-          do
-          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-          ticloud cluster delete -p 1372813089447741295 -c $id --force;
-          done
+#      - name: Delete all serverless
+#        run: |
+#          # delete all serverless
+#          ticloud cluster list 1372813089447741295 -o json > cluster
+#          total=$(jq '.total' cluster);
+#          for i in $(seq 1 $total);
+#          do
+#          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
+#          ticloud cluster delete -p 1372813089447741295 -c $id --force;
+#          done
 
   create-test:
     needs: setup
