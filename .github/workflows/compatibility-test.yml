@@ -22,32 +22,49 @@ jobs:
       - name: Get Connection Info
         run: |
           # delete cluster if exists
-          result=$(echo `ticloud cluster list 1372813089206721319 -o json`)
-          if [[ $result == "Error:"* ]]; then
-            echo "list cluster failed"
-            exit 1
+          set +e
+          result=`ticloud cluster list 1372813089206721319 -o json`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
           fi
-          echo $result > cluster
           
+          echo $result > cluster
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
           id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
           ticloud cluster delete -p 1372813089206721319 -c $id --force;
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo "delete cluster failed"
+            exit "$exitcode"
+          fi
           done
 
           # create cluster
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
-          result=$(echo `ticloud cluster list 1372813089206721319 -o json`)
-          if [[ $result == "Error:"* ]]; then
-            echo "list cluster failed"
-            exit 1
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo "create cluster failed"
+            exit "$exitcode"
           fi
-          echo $result > cluster
           
+          # get connection info
+          result=`ticloud cluster list 1372813089206721319 -o json`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
+          fi
+          
+          echo $result > cluster
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
+          
+
     outputs:
       TiDB_CLOUD_USER: ${{ env.TIDB_CLOUD_USER }}
       TiDB_CLOUD_HOST: ${{ env.TIDB_CLOUD_HOST }}

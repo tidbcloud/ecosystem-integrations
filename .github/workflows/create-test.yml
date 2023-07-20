@@ -1,7 +1,6 @@
-name: Serverless Create Test1
+name: Serverless Create Test
 
 on:
-  pull_request:
   schedule:
     - cron: "0/30 * * * *"  # every 30 minutes
   workflow_dispatch:
@@ -48,7 +47,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        region: [ us-east-1] # [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
+        region: [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -80,6 +79,7 @@ jobs:
             exit "$exitcode"
           fi
 
+          echo $result
           echo $result > ${{ matrix.region }}
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
           echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
@@ -91,6 +91,7 @@ jobs:
 
       - name: Create branch
         run: |
+          set +e
           result=`ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
@@ -106,6 +107,7 @@ jobs:
             exit "$exitcode"
           fi
 
+          echo $result
           echo $result > ${{ matrix.region }}
           echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
