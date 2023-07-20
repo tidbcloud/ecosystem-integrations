@@ -23,14 +23,13 @@ jobs:
         run: |
           # delete all serverless
           set +e
-          result=`ticloud cluster list 1372813089447741295 -o json`
+          ticloud cluster list 1372813089447741295 -o json > cluster
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
+            cat cluster
             exit "$exitcode"
           fi
 
-          echo $result > cluster
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
