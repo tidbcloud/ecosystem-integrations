@@ -1,4 +1,4 @@
-name: Serverless Create Test1
+name: Serverless Create Test
 
 on:
   schedule:
