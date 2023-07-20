@@ -64,56 +64,55 @@ jobs:
           set +e
           PROJECT_ID=1372813089447741295
           result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
+          echo $result
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
             exit "$exitcode"
           fi
           
           id=`echo $result | sed 's/[^0-9]//g'`
-          result=`ticloud cluster get -p $PROJECT_ID -c $id`
+          ticloud cluster get -p $PROJECT_ID -c $id > ${{ matrix.region }}
+          cat ${{ matrix.region }}
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
             exit "$exitcode"
           fi
-
-          echo $result
-          echo $result > ${{ matrix.region }}
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
           echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
           echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
           
           exitcode="$?"
-          exit "$exitcode"
+          if [[ "$exitcode" != "0" ]]; then
+            exit "$exitcode"
+          fi
 
       - name: Create branch
         run: |
           set +e
           result=`ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`
+          echo $result
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
             exit "$exitcode"
           fi
           
           id=`echo $result | grep -o 'bran-[a-zA-Z0-9]*'`
-          result=`ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id`
+          ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id > ${{ matrix.region }}
+          cat ${{ matrix.region }}
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo $result
             exit "$exitcode"
           fi
 
-          echo $result
-          echo $result > ${{ matrix.region }}
           echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
           echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
           
           exitcode="$?"
-          exit "$exitcode"
+          if [[ "$exitcode" != "0" ]]; then
+            exit "$exitcode"
+          fi
 
       - name: Setup mysql
         uses: shogo82148/actions-setup-mysql@v1
