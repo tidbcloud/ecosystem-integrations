@@ -20,16 +20,16 @@ jobs:
           api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY }}
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
-#      - name: Delete all serverless
-#        run: |
-#          # delete all serverless
-#          ticloud cluster list 1372813089447741295 -o json > cluster
-#          total=$(jq '.total' cluster);
-#          for i in $(seq 1 $total);
-#          do
-#          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-#          ticloud cluster delete -p 1372813089447741295 -c $id --force;
-#          done
+      - name: Delete all serverless
+        run: |
+          # delete all serverless
+          ticloud cluster list 1372813089447741295 -o json > cluster
+          total=$(jq '.total' cluster);
+          for i in $(seq 1 $total);
+          do
+          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
+          ticloud cluster delete -p 1372813089447741295 -c $id --force;
+          done
 
   create-test:
     needs: setup
@@ -51,9 +51,9 @@ jobs:
       - name: Create cluster
         run: |
           PROJECT_ID=1372813089447741295
-          result=$(echo `ticloud cluster create -p  $PROJECT_ID --cluster-name test --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`)
-          echo $result
           
+          result=$(echo `ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`)
+          echo $result
           id=`echo $result | sed 's/[^0-9]//g'`
           if [[ $result == "Error:"* ]]; then
             echo "create cluster failed"
@@ -67,30 +67,42 @@ jobs:
             exit 1
           fi
         
+          echo $result > ${{ matrix.region }}
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-          echo "CLUSTER_ID=`echo $(jq '.id' $result) | sed 's/"//g'`" >> $GITHUB_ENV
-          echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' $result)" >> $GITHUB_ENV
-          echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' $result)" >> $GITHUB_ENV
+          echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
+          echo "CLUSTER_USER=$(jq '.status.connection_strings.default_user' ${{ matrix.region }})" >> $GITHUB_ENV
+          echo "CLUSTER_HOST=$(jq '.status.connection_strings.standard.host' ${{ matrix.region }})" >> $GITHUB_ENV
 
-#      - name: Create branch
-#        run: |
-#          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
-#          cat ${{ matrix.region }}
-#          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
-#          cat ${{ matrix.region }}
-#
-#          echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
-#          echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
-#          echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
-#
-#      - name: Setup mysql
-#        uses: shogo82148/actions-setup-mysql@v1
-#
-#      - name: Run test
-#        run: |
-#          mysql -u ${{ env.CLUSTER_USER }} -h ${{ env.CLUSTER_HOST }} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
-#
-#      - name: Delete cluster & branch
-#        run: |
-#          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.BRANCH_ID }} --force
-#          ticloud cluster delete -p ${{ env.PROJECT_ID }} -c ${{ env.CLUSTER_ID }} --force
+      - name: Create branch
+        run: |
+          result=$(echo `ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`)
+          echo $result
+          id=`echo $result | grep -o 'bran-[a-zA-Z0-9]*'`
+          if [[ $result == "Error:"* ]]; then
+            echo "create branch failed"
+            exit 1
+          fi
+          
+          result=$(echo `ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id`)
+          echo $result
+          if [[ $result == "Error:"* ]]; then
+            echo "get branch failed"
+            exit 1
+          fi
+          
+          echo $result > ${{ matrix.region }}
+          echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
+          echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
+          echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
+
+      - name: Setup mysql
+        uses: shogo82148/actions-setup-mysql@v1
+
+      - name: Run test
+        run: |
+          mysql -u ${{ env.CLUSTER_USER }} -h ${{ env.CLUSTER_HOST }} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Delete cluster & branch
+        run: |
+          ticloud branch delete -c ${{ env.CLUSTER_ID }} -b ${{ env.BRANCH_ID }} --force
+          ticloud cluster delete -p ${{ env.PROJECT_ID }} -c ${{ env.CLUSTER_ID }} --force
