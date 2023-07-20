@@ -22,7 +22,13 @@ jobs:
       - name: Get Connection Info
         run: |
           # delete cluster if exists
-          ticloud cluster list 1372813089206721319 -o json > cluster
+          result=$(echo `ticloud cluster list 1372813089206721319 -o json`)
+          if [[ $result == "Error:"* ]]; then
+            echo "list cluster failed"
+            exit 1
+          fi
+          echo $result > cluster
+          
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
@@ -32,7 +38,13 @@ jobs:
 
           # create cluster
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
-          ticloud cluster list 1372813089206721319 -o json > cluster
+          result=$(echo `ticloud cluster list 1372813089206721319 -o json`)
+          if [[ $result == "Error:"* ]]; then
+            echo "list cluster failed"
+            exit 1
+          fi
+          echo $result > cluster
+          
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV

@@ -1,9 +1,8 @@
 name: Serverless Create Test1
 
 on:
-  pull_request:
-#  schedule:
-#    - cron: "0/30 * * * *"  # every 30 minutes
+  schedule:
+    - cron: "0/30 * * * *"  # every 30 minutes
   workflow_dispatch:
 
 jobs:
@@ -23,7 +22,13 @@ jobs:
       - name: Delete all serverless
         run: |
           # delete all serverless
-          ticloud cluster list 1372813089447741295 -o json > cluster
+          result=$(echo `ticloud cluster list 1372813089447741295 -o json`)
+          if [[ $result == "Error:"* ]]; then
+            echo "list cluster failed"
+            exit 1
+          fi
+          
+          echo $result > cluster
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
@@ -35,7 +40,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        region: [us-east-1] #[ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
+        region: [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
