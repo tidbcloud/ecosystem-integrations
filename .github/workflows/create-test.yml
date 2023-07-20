@@ -20,30 +20,29 @@ jobs:
           api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY }}
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
-#      - name: Delete all serverless
-#        run: |
-#          # delete all serverless
-#          set +e
-#          result=`ticloud cluster list 1372813089447741295 -o json`
-#          exitcode="$?"
-#          if [[ "$exitcode" != "0" ]]; then
-#            echo "list cluster failed"
-#            echo $result
-#            exit "$exitcode"
-#          fi
-#
-#          echo $result > cluster
-#          total=$(jq '.total' cluster);
-#          for i in $(seq 1 $total);
-#          do
-#          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-#          ticloud cluster delete -p 1372813089447741295 -c $id --force;
-#          exitcode="$?"
-#          if [[ "$exitcode" != "0" ]]; then
-#            echo "delete cluster failed"
-#            exit "$exitcode"
-#          fi
-#          done
+      - name: Delete all serverless
+        run: |
+          # delete all serverless
+          set +e
+          result=`ticloud cluster list 1372813089447741295 -o json`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
+          fi
+
+          echo $result > cluster
+          total=$(jq '.total' cluster);
+          for i in $(seq 1 $total);
+          do
+          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
+          ticloud cluster delete -p 1372813089447741295 -c $id --force;
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo "delete cluster failed"
+            exit "$exitcode"
+          fi
+          done
 
   create-test:
     needs: setup
@@ -69,7 +68,6 @@ jobs:
           result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo "create cluster failed"
             echo $result
             exit "$exitcode"
           fi
@@ -78,7 +76,6 @@ jobs:
           result=`ticloud cluster get -p $PROJECT_ID -c $id`
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
-            echo "get cluster failed"
             echo $result
             exit "$exitcode"
           fi
@@ -94,25 +91,28 @@ jobs:
 
       - name: Create branch
         run: |
-          result=$(echo `ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`)
-          echo $result
-          id=`echo $result | grep -o 'bran-[a-zA-Z0-9]*'`
-          if [[ $result == "Error:"* ]]; then
-            echo "create branch failed"
-            exit 1
+          result=`ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
           fi
-
-          result=$(echo `ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id`)
-          echo $result
-          if [[ $result == "Error:"* ]]; then
-            echo "get branch failed"
-            exit 1
+          
+          id=`echo $result | grep -o 'bran-[a-zA-Z0-9]*'`
+          result=`ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
           fi
 
           echo $result > ${{ matrix.region }}
           echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
           echo "BRANCH_USER=$(jq '.user_prefix' ${{ matrix.region }})".root"" >> $GITHUB_ENV
           echo "BRANCH_HOST=$(jq '.endpoints.public_endpoint.host' ${{ matrix.region }})" >> $GITHUB_ENV
+          
+          exitcode="$?"
+          exit "$exitcode"
 
       - name: Setup mysql
         uses: shogo82148/actions-setup-mysql@v1
