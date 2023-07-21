@@ -22,20 +22,45 @@ jobs:
       - name: Get Connection Info
         run: |
           # delete cluster if exists
+          set +e
           ticloud cluster list 1372813089206721319 -o json > cluster
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            cat cluster
+            exit "$exitcode"
+          fi
+          
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
           id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
           ticloud cluster delete -p 1372813089206721319 -c $id --force;
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            exit "$exitcode"
+          fi
           done
 
           # create cluster
           ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            exit "$exitcode"
+          fi
+          
+          # get connection info
           ticloud cluster list 1372813089206721319 -o json > cluster
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            cat cluster
+            exit "$exitcode"
+          fi
+          
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
+          
+
     outputs:
       TiDB_CLOUD_USER: ${{ env.TIDB_CLOUD_USER }}
       TiDB_CLOUD_HOST: ${{ env.TIDB_CLOUD_HOST }}

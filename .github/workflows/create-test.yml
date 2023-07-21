@@ -22,12 +22,23 @@ jobs:
       - name: Delete all serverless
         run: |
           # delete all serverless
+          set +e
           ticloud cluster list 1372813089447741295 -o json > cluster
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            cat cluster
+            exit "$exitcode"
+          fi
+
           total=$(jq '.total' cluster);
           for i in $(seq 1 $total);
           do
           id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
           ticloud cluster delete -p 1372813089447741295 -c $id --force;
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            exit "$exitcode"
+          fi
           done
 
   create-test:
@@ -49,10 +60,23 @@ jobs:
 
       - name: Create cluster
         run: |
+          set +e
           PROJECT_ID=1372813089447741295
-          ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-          ticloud cluster get -p $PROJECT_ID -c `cat ${{ matrix.region }} | sed 's/[^0-9]//g'` > ${{ matrix.region }}
+          result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
+          fi
+          echo $result
+          
+          id=`echo $result | sed 's/[^0-9]//g'`
+          ticloud cluster get -p $PROJECT_ID -c $id > ${{ matrix.region }}
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            cat ${{ matrix.region }}
+            exit "$exitcode"
+          fi
           cat ${{ matrix.region }}
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
           echo "CLUSTER_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
@@ -61,9 +85,22 @@ jobs:
 
       - name: Create branch
         run: |
-          ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }} > ${{ matrix.region }}
-          cat ${{ matrix.region }}
-          ticloud branch get -c ${{ env.CLUSTER_ID }} -b `cat ${{ matrix.region }} | grep -o 'bran-[a-zA-Z0-9]*'` > ${{ matrix.region }}
+          set +e
+          result=`ticloud branch create -c ${{ env.CLUSTER_ID }} --branch-name ${{ matrix.region }}`
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            echo $result
+            exit "$exitcode"
+          fi
+          echo $result
+
+          id=`echo $result | grep -o 'bran-[a-zA-Z0-9]*'`
+          ticloud branch get -c ${{ env.CLUSTER_ID }} -b $id > ${{ matrix.region }}
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]]; then
+            cat ${{ matrix.region }}
+            exit "$exitcode"
+          fi
           cat ${{ matrix.region }}
 
           echo "BRANCH_ID=`echo $(jq '.id' ${{ matrix.region }}) | sed 's/"//g'`" >> $GITHUB_ENV
