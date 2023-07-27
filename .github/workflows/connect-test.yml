@@ -18,7 +18,7 @@ jobs:
 
       - name: connect cluster eu-central-1
         run: |
-          mysql --connect-timeout 15 -u '4GmTxLZ1z7HqvkP.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'Bxoh2PviimqNru3.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_EU_CENTRAL_1 }}
       - name: connect cluster ap-southeast-1
         run: |          
           mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
