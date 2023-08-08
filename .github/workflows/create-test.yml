@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -47,7 +47,7 @@ jobs:
       fail-fast: false
       matrix:
         region: [ us-east-1, us-west-2, ap-northeast-1, ap-southeast-1, eu-central-1 ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Checkout
