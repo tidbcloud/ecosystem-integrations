@@ -7,7 +7,7 @@ on:
 
 jobs:
   us-east-1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,7 +23,7 @@ jobs:
           mysql --connect-timeout 15 -u '2NZSvbxdPaNdeNq.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_EAST_1 }}
 
   us-west-2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,7 +39,7 @@ jobs:
           mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_WEST_2 }}
 
   ap-southeast-1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
           mysql --connect-timeout 15 -u '3JwPQ7c8B1Bva6f.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_NORTHEAST_1 }}    
 
   ap-northeast-1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -73,7 +73,7 @@ jobs:
           mysql --connect-timeout 15 -u 'pSs1wenmQSbzevk.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_SOUTHEAST_1 }}    
 
   eu-central-1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
