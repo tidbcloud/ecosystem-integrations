@@ -1,6 +1,3 @@
 {
-  "dependencies": {
-    "undici": "^5.24.0"
-  },
   "type": "module"
 }
