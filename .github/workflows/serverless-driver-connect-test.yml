@@ -21,7 +21,7 @@ jobs:
       - name: connect cluster us-east-1
         run: |
           cd example_code/serverless-driver
-          npm install undici @tidbcloud/serverless
+          npm install @tidbcloud/serverless
           export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
