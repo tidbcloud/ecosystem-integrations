@@ -22,7 +22,7 @@ jobs:
         run: |
           cd example_code/serverless-driver
           npm install undici @tidbcloud/serverless
-          export DATABASE_URL= mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
           echo $DATABASE_URL
           node ConnectTest.js
 
