@@ -23,6 +23,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
+          echo mysql://nADWvyBQFXhgZxw.root:pswd@gateway01.us-east-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
 #  us-west-2:
