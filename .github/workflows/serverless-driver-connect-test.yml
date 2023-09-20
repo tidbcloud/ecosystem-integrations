@@ -23,7 +23,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
-          echo 'mysql://nADWvyBQFXhgZxw.root:pswd@gateway01.us-east-1.prod.aws.tidbcloud.com/test'
+          echo "mysql://nADWvyBQFXhgZxw.root:pswd@gateway01.us-east-1.prod.aws.tidbcloud.com/test"
           node ConnectTest.js
 
   us-west-2:
@@ -40,7 +40,7 @@ jobs:
         run: |
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
-          export DATABASE_URL= mysql://j24i5KNxRJpvEj7.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-west-2.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://j24i5KNxRJpvEj7.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-west-2.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   ap-southeast-1:
@@ -57,7 +57,7 @@ jobs:
         run: |
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
-          export DATABASE_URL= mysql://Nv7fzTqtB8V698S.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-northeast-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://Nv7fzTqtB8V698S.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-northeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   ap-northeast-1:
@@ -74,7 +74,7 @@ jobs:
         run: |
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
-          export DATABASE_URL= mysql://eQsaVQSBNukNp7k.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://eQsaVQSBNukNp7k.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   eu-central-1:
@@ -91,5 +91,5 @@ jobs:
         run: |
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
-          export DATABASE_URL= mysql://Bxoh2PviimqNru3.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.eu-central-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://Bxoh2PviimqNru3.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.eu-central-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
