@@ -6,6 +6,7 @@ on:
       - "Serverless Connect Test"
       - "Serverless Driver Compatibility Test"
       - "Serverless Create Test"
+      - "Serverless Driver Connect Test"
     types:
       - completed
 
