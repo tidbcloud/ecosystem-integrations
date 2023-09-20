@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0/10 * * * *"  # every 10 minutes
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
 
 jobs:
   us-east-1:
@@ -19,7 +21,7 @@ jobs:
       - name: connect cluster us-east-1
         run: |
           cd example_code/serverless-driver
-          npm install @tidbcloud/serverless
+          npm install undici @tidbcloud/serverless
           export DATABASE_URL= mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
@@ -36,7 +38,7 @@ jobs:
       - name: connect cluster us-west-2
         run: |
           cd example_code/serverless-driver
-          npm install @tidbcloud/serverless
+          npm install undici @tidbcloud/serverless
           export DATABASE_URL= mysql://j24i5KNxRJpvEj7.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-west-2.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
@@ -53,7 +55,7 @@ jobs:
       - name: connect cluster ap-northeast-1
         run: |
           cd example_code/serverless-driver
-          npm install @tidbcloud/serverless
+          npm install undici @tidbcloud/serverless
           export DATABASE_URL= mysql://Nv7fzTqtB8V698S.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-northeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
@@ -70,7 +72,7 @@ jobs:
       - name: connect cluster ap-southeast-1
         run: |
           cd example_code/serverless-driver
-          npm install @tidbcloud/serverless
+          npm install undici @tidbcloud/serverless
           export DATABASE_URL= mysql://eQsaVQSBNukNp7k.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
@@ -87,6 +89,6 @@ jobs:
       - name: connect cluster eu-central-1
         run: |
           cd example_code/serverless-driver
-          npm install @tidbcloud/serverless
+          npm install undici @tidbcloud/serverless
           export DATABASE_URL= mysql://Bxoh2PviimqNru3.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.eu-central-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
