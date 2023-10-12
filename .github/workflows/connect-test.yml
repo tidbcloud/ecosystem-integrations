@@ -38,7 +38,7 @@ jobs:
         run: |
           mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_WEST_2 }}
 
-  ap-southeast-1:
+  ap-northeast-1:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,7 +55,7 @@ jobs:
         run: |
           mysql --connect-timeout 15 -u '3JwPQ7c8B1Bva6f.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_NORTHEAST_1 }}    
 
-  ap-northeast-1:
+  ap-southeast-1:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
