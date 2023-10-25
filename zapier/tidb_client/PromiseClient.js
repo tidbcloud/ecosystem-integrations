@@ -1,4 +1,5 @@
 const promiseMysql = require('mysql2/promise')
+const pjson = require('../package.json')
 
 function isEmpty(obj) {
   return obj === null || obj === undefined || obj === ''
@@ -33,6 +34,9 @@ async function query(host, user, port, password, database, sql, values) {
       port: port,
       password: password,
       database: database,
+      connectAttributes: {
+        program_name: `zapier-tidbcloud-integrations/${pjson.version}`,
+      },
       ssl: {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: true,

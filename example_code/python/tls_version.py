@@ -6,9 +6,9 @@ connection = mysql.connector.connect(host=sys.argv[1],
                                      port= 4000,
                                      password = sys.argv[3],
                                      database = 'test',
-                                     conn_attrs = {'program_name': 'pingcap/serverless-test'},
                                      ssl_ca = sys.argv[4],
-                                     ssl_verify_identity = True)
+                                     ssl_verify_identity = True,
+                                     tls_versions=[sys.argv[5]])
 
 cursor = connection.cursor()
 cursor.execute("SHOW DATABASES")

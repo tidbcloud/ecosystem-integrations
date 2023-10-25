@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
     int ssl_mode = SSL_MODE_VERIFY_IDENTITY;
 
     mysql_init(&mysql);
+    mysql_options4(&mysql, MYSQL_OPT_CONNECT_ATTR_ADD, "program_name", "pingcap/serverless-test");
     mysql_options(&mysql, MYSQL_OPT_SSL_MODE, &ssl_mode);
     mysql_options(&mysql, MYSQL_OPT_SSL_CA, argv[4]);
     conn = mysql_real_connect(&mysql, argv[1], argv[2], argv[3], "test", 4000, NULL, 0);

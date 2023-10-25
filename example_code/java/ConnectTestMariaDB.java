@@ -1,6 +1,6 @@
 import java.sql.*;
 
-public class ConnectTest {
+public class ConnectTestMariaDB {
   public static void main(String args[]) throws Exception {
     if (args.length != 3) {
       throw new Error("Usage: java ConnectTest <user> <host> <password>");
@@ -10,7 +10,7 @@ public class ConnectTest {
     String password = args[2];
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-        "jdbc:mysql://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3&connectionAttributes=program_name:pingcap/serverless-test"
+        "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full&connectionAttributes=program_name:pingcap/serverless-test"
       );
       Statement stmt = conn.createStatement();
       try {

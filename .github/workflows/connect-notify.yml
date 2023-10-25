@@ -1,0 +1,54 @@
+name: Serverless Test Notify
+
+on:
+  workflow_run:
+    workflows:
+      - "Serverless Connect Test"
+      - "Serverless Driver Compatibility Test"
+      - "Serverless Create Test"
+      - "Serverless Driver Connect Test"
+    types:
+      - completed
+
+jobs:
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Send Notification
+        uses: northwang-lucky/chatbot-webhook-client@v1.1.1
+        with:
+          app: Lark
+          webhook: ${{ secrets.NOTIFY_WEBHOOK }}
+          template: >-
+            {
+                "msg_type": "interactive",
+                "card": {
+                    "elements": [{
+                            "tag": "div",
+                            "text": {
+                                    "content": "**Message** \n${{ github.event.workflow_run.name}} #${{ github.event.workflow_run.run_number }} failed",
+                                    "tag": "lark_md"
+                            }
+                    }, {
+                            "actions": [{
+                                    "tag": "button",
+                                    "text": {
+                                            "content": "More information",
+                                            "tag": "lark_md"
+                                    },
+                                    "url": "${{ github.event.workflow_run.html_url }}",
+                                    "type": "default",
+                                    "value": {}
+                            }],
+                            "tag": "action"
+                    }],
+                    "header": {
+                            "title": {
+                                    "content": "Ecosystem Integrations Notify",
+                                    "tag": "plain_text"
+                            },
+                            "template": "red"
+                    }
+                }
+            }
