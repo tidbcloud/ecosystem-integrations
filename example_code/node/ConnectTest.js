@@ -11,6 +11,9 @@ var connection = mysql.createConnection({
   ssl: {
     minVersion: 'TLSv1.2',
     rejectUnauthorized: true
+  },
+  connectAttributes: {
+    program_name: 'pingcap/serverless-test'
   }
 });
 connection.connect(function(err) {

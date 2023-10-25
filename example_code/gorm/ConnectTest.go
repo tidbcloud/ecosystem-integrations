@@ -19,7 +19,7 @@ func main() {
 		MinVersion: tls.VersionTLS12,
 		ServerName: host,
 	})
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb", user, password, host)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=program_name:pingcap%2Fserverless-test", user, password, host)
 
 	db, err := gorm.Open(gormmysql.Open(dsn), &gorm.Config{})
 	if err != nil {
