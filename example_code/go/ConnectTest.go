@@ -4,9 +4,11 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"log"
+	"net/url"
 	"os"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -20,16 +22,19 @@ func main() {
 		ServerName: host,
 	})
 
-    db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=program_name:pingcap%2Fserverless-test", user, password, host))
+	db, err := sql.Open("mysql", fmt.Sprintf(
+		"%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=%s",
+		user, password, host, url.QueryEscape("program_name:pingcap/serverless-test")),
+	)
 	if err != nil {
-		log.Fatal("failed to connect database", err)
+		log.Fatal("failed to connect database -> ", err)
 	}
 	defer db.Close()
 
 	var dbName string
 	err = db.QueryRow("SELECT DATABASE();").Scan(&dbName)
 	if err != nil {
-		log.Fatal("failed to execute query", err)
+		log.Fatal("failed to execute query -> ", err)
 	}
 	fmt.Println(dbName)
 }
