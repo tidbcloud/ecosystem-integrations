@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0/5 * * * *"  # every 5 minutes
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
 
 jobs:
   us-east-1:
