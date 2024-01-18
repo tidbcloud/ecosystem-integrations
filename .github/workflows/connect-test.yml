@@ -20,7 +20,7 @@ jobs:
 
       - name: connect cluster us-east-1
         run: |
-          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }}  -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }}  -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_US_EAST_1 }}
       - name: connect branch us-east-1
         run: |
           mysql --connect-timeout 15 -u '4ZT7LxxVy4JJoaH.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_EAST_1 }}
@@ -39,7 +39,7 @@ jobs:
 
       - name: connect cluster us-west-2
         run: |
-          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_US_WEST_2 }}
       - name: connect branch us-west-2
         run: |
           mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_WEST_2 }}
@@ -58,7 +58,7 @@ jobs:
 
       - name: connect cluster ap-northeast-1
         run: |
-          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}  
+          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_AP_NORTHEAST_1 }}  
 
       - name: connect branch ap-northeast-1
         run: |
@@ -78,7 +78,7 @@ jobs:
 
       - name: connect cluster ap-southeast-1
         run: |
-          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }} 
+          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_AP_SOUTHEAST_1 }} 
 
       - name: connect branch ap-southeast-1
         run: |

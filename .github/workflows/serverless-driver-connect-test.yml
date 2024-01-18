@@ -21,7 +21,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           echo "nADWvyBQFXhgZxw.root:pswd@gateway01.us-east-1.prod.aws.tidbcloud.com"
-          export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://nADWvyBQFXhgZxw.root:${{ secrets.CLUSTER_PSWD_US_EAST_1 }}@gateway01.us-east-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   us-west-2:
@@ -39,7 +39,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           echo "j24i5KNxRJpvEj7.root:pswd@gateway01.us-west-2.prod.aws.tidbcloud.com"
-          export DATABASE_URL=mysql://j24i5KNxRJpvEj7.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.us-west-2.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://j24i5KNxRJpvEj7.root:${{ secrets.CLUSTER_PSWD_US_WEST_2 }}@gateway01.us-west-2.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   ap-northeast-1:
@@ -57,7 +57,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           echo "Nv7fzTqtB8V698S.root:pswd@gateway01.ap-northeast-1.prod.aws.tidbcloud.com"
-          export DATABASE_URL=mysql://Nv7fzTqtB8V698S.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-northeast-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://Nv7fzTqtB8V698S.root:${{ secrets.CLUSTER_PSWD_AP_NORTHEAST_1 }}@gateway01.ap-northeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   ap-southeast-1:
@@ -75,7 +75,7 @@ jobs:
           cd example_code/serverless-driver
           npm install @tidbcloud/serverless
           echo "eQsaVQSBNukNp7k.root:pswd@gateway01.ap-southeast-1.prod.aws.tidbcloud.com"
-          export DATABASE_URL=mysql://eQsaVQSBNukNp7k.root:${{ secrets.TIDB_CLOUD_PASSWORD }}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com/test
+          export DATABASE_URL=mysql://eQsaVQSBNukNp7k.root:${{ secrets.CLUSTER_PSWD_AP_SOUTHEAST_1 }}@gateway01.ap-southeast-1.prod.aws.tidbcloud.com/test
           node ConnectTest.js
 
   eu-central-1:
