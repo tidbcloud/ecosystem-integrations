@@ -1,2 +1,2 @@
-github.com/go-sql-driver/mysql v1.7.2-0.20230713085235-0b18dac46f7f h1:4+t8Qb99xUG/Ea00cQAiQl+gsjpK8ZYtAO8E76gRzQI=
-github.com/go-sql-driver/mysql v1.7.2-0.20230713085235-0b18dac46f7f/go.mod h1:6gYm/zDt3ahdnMVTPeT/LfoBFsws1qZm5yI6FmVjB14=
+github.com/go-sql-driver/mysql v1.7.2-0.20231114111717-b2e2ccbf1656 h1:LSeszcr8gjrxgKhKy/xvlX4nFgCtmqKM9+R/8zgIWUI=
+github.com/go-sql-driver/mysql v1.7.2-0.20231114111717-b2e2ccbf1656/go.mod h1:6gYm/zDt3ahdnMVTPeT/LfoBFsws1qZm5yI6FmVjB14=

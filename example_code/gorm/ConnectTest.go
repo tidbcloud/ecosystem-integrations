@@ -3,11 +3,13 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
+	"net/url"
+	"os"
+
 	"github.com/go-sql-driver/mysql"
 	gormmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
 
 func main() {
@@ -19,7 +21,10 @@ func main() {
 		MinVersion: tls.VersionTLS12,
 		ServerName: host,
 	})
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=program_name:pingcap%2Fserverless-test", user, password, host)
+	dsn := fmt.Sprintf(
+		"%s:%s@tcp(%s:4000)/test?tls=tidb&connectionAttributes=%s",
+		user, password, host, url.QueryEscape("program_name:pingcap/serverless-test"),
+	)
 
 	db, err := gorm.Open(gormmysql.Open(dsn), &gorm.Config{})
 	if err != nil {
