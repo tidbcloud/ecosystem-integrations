@@ -93,6 +93,9 @@ jobs:
     needs: setup
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    strategy:
+      matrix:
+        port: [ 4000, 3306 ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -101,7 +104,7 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test
-        run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
+        run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P ${{ matrix.port }} -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
 
   invalid_tls_version:
     needs: setup
@@ -110,6 +113,7 @@ jobs:
     strategy:
       matrix:
         tls: [ TLSv1, TLSv1.1 ]
+        port: [ 4000, 3306 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -121,7 +125,7 @@ jobs:
           # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
           pip3 install mysql-connector-python==8.0.25
           cd example_code/python
-          ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+          ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   valid_tls_version:
     needs: setup
@@ -130,6 +134,7 @@ jobs:
     strategy:
       matrix:
         tls: [ TLSv1.2, TLSv1.3 ]
+        port: [ 4000, 3306 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -140,7 +145,7 @@ jobs:
         run: |
           pip3 install mysql-connector-python
           cd example_code/python
-          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   mycli:
     needs: setup
@@ -340,7 +345,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.20.0'
+          go-version-file: 'example_code/go/go.mod'
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/go
@@ -358,7 +363,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.20.0'
+          go-version-file: 'example_code/gorm/go.mod'
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/gorm
