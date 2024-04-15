@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
@@ -81,7 +81,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
@@ -98,7 +98,7 @@ jobs:
         port: [ 4000, 3306 ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
@@ -115,8 +115,8 @@ jobs:
         tls: [ TLSv1, TLSv1.1 ]
         port: [ 4000, 3306 ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -136,8 +136,8 @@ jobs:
         tls: [ TLSv1.2, TLSv1.3 ]
         port: [ 4000, 3306 ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -163,10 +163,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
 
       - name: Install mycli
         run: pip3 install mycli
@@ -183,8 +183,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '8'
@@ -209,8 +209,8 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '8'
@@ -235,8 +235,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Install mysql in macos
@@ -267,8 +267,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
@@ -292,8 +292,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
@@ -317,8 +317,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Install mysql in macos
@@ -342,8 +342,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/go/go.mod'
       - name: Run test on ${{ matrix.os }}
@@ -360,8 +360,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/gorm/go.mod'
       - name: Run test on ${{ matrix.os }}
@@ -378,8 +378,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Run test on ${{ matrix.os }}
@@ -396,8 +396,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Run test on ${{ matrix.os }}
@@ -415,8 +415,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v3
-      - uses: moonrepo/setup-rust@v0
+      - uses: actions/checkout@v4
+      - uses: moonrepo/setup-rust@v1
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/rust
@@ -430,7 +430,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0' # Not needed with a .ruby-version file
@@ -465,7 +465,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
@@ -488,7 +488,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: rlalik/setup-cpp-compiler@v1.2
       - name: Run test on macos
         if: ${{ matrix.os == 'macos-12' }}

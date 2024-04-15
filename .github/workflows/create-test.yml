@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
@@ -52,7 +52,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
