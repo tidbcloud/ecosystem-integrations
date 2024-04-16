@@ -16,6 +16,7 @@ jobs:
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
         with:
+          version: 0.5.2
           api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY }}
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
@@ -57,6 +58,7 @@ jobs:
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
         with:
+          version: 0.5.2
           api_public_key: ${{ secrets.CREATE_TEST_PUBLIC_KEY}}
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
