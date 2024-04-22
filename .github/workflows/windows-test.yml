@@ -3,7 +3,7 @@ on:
   pull_request:
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
