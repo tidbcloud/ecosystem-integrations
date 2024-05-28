@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "mysql": "^2.18.1",
-    "mysql2": "^3.5.2",
+    "mysql2": "^3.9.8",
     "mysql2-timeout-additions": "^1.1.2",
     "zapier-platform-core": "12.2.0"
   },
