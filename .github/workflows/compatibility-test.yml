@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -70,9 +70,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -92,7 +92,7 @@ jobs:
 
   no_tls:
     needs: setup
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -109,7 +109,7 @@ jobs:
 
   invalid_tls_version:
     needs: setup
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -130,7 +130,7 @@ jobs:
 
   valid_tls_version:
     needs: setup
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -152,9 +152,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -180,7 +180,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -207,7 +207,7 @@ jobs:
   # https://jira.mariadb.org/browse/CONJ-1023
   java_jdbc_mariadb_CONJ-1023:
     needs: setup
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -225,9 +225,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -257,9 +257,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -282,9 +282,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -307,9 +307,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -339,7 +339,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -358,7 +358,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -377,7 +377,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -395,7 +395,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -414,7 +414,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ windows-2022, macos-14 ] # skip ubuntu-24.04 as it get stuck for unknown reasons
+        os: [ windows-2022, macos-14 ] # skip ubuntu-22.04 as it get stuck for unknown reasons
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -429,7 +429,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, macos-14 ] # install mysql2 in windows is a little difficult, dismiss it for now
+        os: [ ubuntu-22.04, macos-14 ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -447,7 +447,7 @@ jobs:
           gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           cd example_code/ruby
           gem install mysql2
@@ -457,9 +457,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-2022, macos-14 ]
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -482,9 +482,9 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-24.04, macos-14 ]
+        os: [ ubuntu-22.04, macos-14 ]
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-22.04
             cert: /etc/ssl/certs/ca-certificates.crt
           - os: macos-14
             cert: /etc/ssl/cert.pem
@@ -501,7 +501,7 @@ jobs:
           g++ ConnectTest.cpp -o test -I/usr/local/include/mysql -lmysqlclient
           ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt install -y libmysqlclient-dev
           cd example_code/cpp
