@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -60,8 +60,6 @@ jobs:
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
-          
-
     outputs:
       TiDB_CLOUD_USER: ${{ env.TIDB_CLOUD_USER }}
       TiDB_CLOUD_HOST: ${{ env.TIDB_CLOUD_HOST }}
@@ -70,11 +68,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ./example_code/x1.pem
@@ -92,7 +90,7 @@ jobs:
 
   no_tls:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -109,7 +107,7 @@ jobs:
 
   invalid_tls_version:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -118,19 +116,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Run test on ${{ matrix.tls }}
         run: |
           # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
-          pip3 install mysql-connector-python==8.0.25
+          pip3 install mysql-connector-python==8.0.25 --break-system-packages
           cd example_code/python
           ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   valid_tls_version:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -139,12 +134,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Run test on ${{ matrix.tls }}
         run: |
-          pip3 install mysql-connector-python
+          pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
           python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
@@ -152,11 +144,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ./example_code/x1.pem
@@ -170,7 +162,7 @@ jobs:
         uses: actions/setup-python@v5
 
       - name: Install mycli
-        run: pip3 install mycli
+        run: pip3 install mycli --break-system-packages
 
       - name: Run test on ${{ matrix.os }}
         run:
@@ -180,7 +172,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -188,7 +180,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '8'
+          java-version: '17'
       - name: Run test on ubuntu or macos
         if: ${{ matrix.os != 'windows-2022' }}
         run: |
@@ -207,14 +199,14 @@ jobs:
   # https://jira.mariadb.org/browse/CONJ-1023
   java_jdbc_mariadb_CONJ-1023:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '8'
+          java-version: '17'
       - name: Run test
         run: |
           cd example_code/java
@@ -225,11 +217,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ../x1.pem
@@ -238,18 +230,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-14' }}
         run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
-          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
-          brew install mysql
-          export PATH=$PATH:/usr/local/mysql/bin
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
+          pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysqlclient
+          pip3 install mysqlclient --break-system-packages
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -257,11 +246,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ../x1.pem
@@ -270,11 +259,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysql-connector-python
+          pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
           python3 ConnectTest_mysql-connector-python.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -282,11 +269,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ../x1.pem
@@ -295,11 +282,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install pymysql
+          pip3 install pymysql --break-system-packages
           cd example_code/python
           python3 ConnectTest_pymysql.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}        
 
@@ -307,11 +292,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ../x1.pem
@@ -320,18 +305,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-14' }}
         run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
-          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
-          brew install mysql
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
+          pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysqlclient
-          pip3 install sqlalchemy
+          pip3 install mysqlclient --break-system-packages
+          pip3 install sqlalchemy --break-system-packages
           cd example_code/sqlalchemy
           python3 ConnectTest.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -339,7 +322,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -347,6 +330,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/go/go.mod'
+          cache-dependency-path: 'example_code/go/go.sum'
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/go
@@ -357,7 +341,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -365,6 +349,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/gorm/go.mod'
+          cache-dependency-path: 'example_code/gorm/go.sum'
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/gorm
@@ -375,7 +360,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -393,7 +378,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -412,12 +397,12 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ windows-2022, macos-12 ] # skip ubuntu-22.04 as it get stuck for unknown reasons
+        os: [ windows-2022, macos-14 ] # skip ubuntu-24.04 as it get stuck for unknown reasons
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: moonrepo/setup-rust@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/rust
@@ -427,7 +412,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, macos-12 ] # install mysql2 in windows is a little difficult, dismiss it for now
+        os: [ ubuntu-24.04, macos-14 ] # install mysql2 in windows is a little difficult, dismiss it for now
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -437,7 +422,7 @@ jobs:
           ruby-version: '3.0' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install mysql on macos
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-14' }}
         run: |
           brew install mysql
           cd example_code/ruby
@@ -445,7 +430,7 @@ jobs:
           gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: |
           cd example_code/ruby
           gem install mysql2
@@ -455,11 +440,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-12 ]
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
           - os: windows-2022
             cert: ../x1.pem
@@ -480,11 +465,11 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ ubuntu-22.04, macos-12 ]
+        os: [ ubuntu-24.04, macos-14 ]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             cert: /etc/ssl/certs/ca-certificates.crt
-          - os: macos-12
+          - os: macos-14
             cert: /etc/ssl/cert.pem
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -492,14 +477,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: rlalik/setup-cpp-compiler@v1.2
       - name: Run test on macos
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
+          flags=$(pkg-config --cflags --libs mysqlclient)
           cd example_code/cpp
-          g++ ConnectTest.cpp -o test -I/usr/local/include/mysql -lmysqlclient
+          eval "g++ ConnectTest.cpp -o test $flags"
           ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
       - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: |
           sudo apt install -y libmysqlclient-dev
           cd example_code/cpp
