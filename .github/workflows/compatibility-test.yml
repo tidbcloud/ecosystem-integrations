@@ -402,7 +402,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: moonrepo/setup-rust@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/rust
