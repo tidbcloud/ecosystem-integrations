@@ -60,8 +60,6 @@ jobs:
           cat cluster
           echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
           echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
-          
-
     outputs:
       TiDB_CLOUD_USER: ${{ env.TIDB_CLOUD_USER }}
       TiDB_CLOUD_HOST: ${{ env.TIDB_CLOUD_HOST }}
@@ -235,11 +233,9 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
           brew install mysql-client
           export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
-          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
-          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
+          pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
           pip3 install mysqlclient --break-system-packages
@@ -312,11 +308,9 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
           brew install mysql-client
           export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
-          export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
-          export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient) 
+          pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
           pip3 install mysqlclient --break-system-packages
