@@ -118,13 +118,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Run test on ${{ matrix.tls }}
         run: |
           # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
-          pip3 install mysql-connector-python==8.0.25
+          pip3 install mysql-connector-python==8.0.25 --break-system-packages
           cd example_code/python
           ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
@@ -139,12 +136,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Run test on ${{ matrix.tls }}
         run: |
-          pip3 install mysql-connector-python
+          pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
           python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
@@ -238,18 +232,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-14' }}
-        run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
-          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
-          brew install mysql
-          export PATH=$PATH:/usr/local/mysql/bin
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysqlclient
+          pip3 install mysqlclient --break-system-packages
           cd example_code/python
           python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -270,11 +255,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysql-connector-python
+          pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
           python3 ConnectTest_mysql-connector-python.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -295,11 +278,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install pymysql
+          pip3 install pymysql --break-system-packages
           cd example_code/python
           python3 ConnectTest_pymysql.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}        
 
@@ -320,18 +301,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install mysql in macos
-        if: ${{ matrix.os == 'macos-14' }}
-        run: |
-          # https://github.com/Homebrew/homebrew-core/issues/130258
-          ln -sv $(brew --prefix zlib)/lib/libz.dylib $(brew --prefix)/lib/libzlib.dylib
-          brew install mysql
       - name: Run test on ${{ matrix.os }}
         run: |
-          pip3 install mysqlclient
-          pip3 install sqlalchemy
+          pip3 install mysqlclient --break-system-packages
+          pip3 install sqlalchemy --break-system-packages
           cd example_code/sqlalchemy
           python3 ConnectTest.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
 
@@ -414,7 +387,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ windows-2022, macos-14 ] # skip ubuntu-24.04 as it get stuck for unknown reasons
+        os: [ ubuntu-24.04, windows-2022, macos-14 ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -438,16 +411,7 @@ jobs:
         with:
           ruby-version: '3.0' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: Install mysql on macos
-        if: ${{ matrix.os == 'macos-14' }}
-        run: |
-          brew install mysql
-          cd example_code/ruby
-          # https://github.com/Homebrew/homebrew-core/issues/130258
-          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
-          ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
-      - name: Run test on ubuntu
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
+      - name: Run test on ${{ matrix.os }}
         run: |
           cd example_code/ruby
           gem install mysql2
