@@ -496,7 +496,7 @@ jobs:
       - name: Run test on macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql
+          brew install mysql mysql-client
           cd example_code/cpp
           g++ ConnectTest.cpp -o test -I/usr/local/include/mysql -lmysqlclient
           ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
