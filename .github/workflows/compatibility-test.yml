@@ -84,6 +84,8 @@ jobs:
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: "8.3"
 
       - name: Run test on ${{ matrix.os }}
         run: mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }} -p${{ secrets.TIDB_CLOUD_PASSWORD }}
@@ -101,6 +103,8 @@ jobs:
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: "8.3"
 
       - name: Run test
         run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P ${{ matrix.port }} -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"

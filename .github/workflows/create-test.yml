@@ -113,6 +113,8 @@ jobs:
 
       - name: Setup mysql
         uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: "8.3"
 
       - name: Run test
         run: |
