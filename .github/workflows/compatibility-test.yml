@@ -424,10 +424,10 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql
+          brew install mysql@8.0
           cd example_code/ruby
           # https://github.com/Homebrew/homebrew-core/issues/130258
-          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
+          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql@8.0)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
         if: ${{ matrix.os == 'ubuntu-24.04' }}
