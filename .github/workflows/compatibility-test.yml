@@ -233,8 +233,8 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql-client@8.0
-          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client@8.0/lib/pkgconfig"
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
           pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -308,8 +308,8 @@ jobs:
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql-client@8.0
-          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client@8.0/lib/pkgconfig"
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
           pip3 install mysqlclient --break-system-packages
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -424,10 +424,10 @@ jobs:
       - name: Install mysql on macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql@8.0
+          brew install mysql
           cd example_code/ruby
           # https://github.com/Homebrew/homebrew-core/issues/130258
-          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql@8.0)
+          gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql)
           ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
       - name: Run test on ubuntu
         if: ${{ matrix.os == 'ubuntu-24.04' }}
@@ -479,8 +479,8 @@ jobs:
       - name: Run test on macos
         if: ${{ matrix.os == 'macos-14' }}
         run: |
-          brew install mysql-client@8.0
-          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client@8.0/lib/pkgconfig"
+          brew install mysql-client
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
           flags=$(pkg-config --cflags --libs mysqlclient)
           cd example_code/cpp
           eval "g++ ConnectTest.cpp -o test $flags"
