@@ -66,7 +66,7 @@ jobs:
         run: |
           set +e
           PROJECT_ID=1372813089447741295
-          result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
+          result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS --debug`
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
             echo $result
