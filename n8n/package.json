@@ -54,6 +54,6 @@
   },
   "dependencies": {
     "mysql2": "~2.3.0",
-    "urllib": "~2.40.0"
+    "urllib": "~2.44.0"
   }
 }
