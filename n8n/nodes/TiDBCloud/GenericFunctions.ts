@@ -228,7 +228,7 @@ export async function createConnection(this: IExecuteFunctions | ILoadOptionsFun
 		if (caCertificate) {
 			baseCredentials.ssl.ca = caCertificate;
 		}
-		baseCredentials.ssl.rejectUnauthorized = 'false';
+		baseCredentials.ssl.rejectUnauthorized = true;
 		baseCredentials.ssl.minVersion = "TLSv1.2";
 	}
 
