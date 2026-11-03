@@ -30,6 +30,8 @@ jobs:
           api_private_key: ${{ secrets.TLS_PRIVATE_KEY }}
 
       - name: Get Connection Info
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run: |
           ticloud cluster list 1372813089206721319 -o json > cluster
           jq -e '(.items | type == "array") and all(.items[]; (.name | type == "string") and (.id | type == "string"))' cluster > /dev/null
@@ -40,12 +42,12 @@ jobs:
             ticloud cluster delete -p 1372813089206721319 -c "$id" --force
           done < clusters-to-delete
           # create cluster
-          ticloud cluster create --project-id 1372813089206721319 --cluster-name ci-compatibility-tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
+          ticloud cluster create --project-id 1372813089206721319 --cluster-name ci-compatibility-tls-test --cloud-provider AWS -r us-east-1 --root-password "$TIDB_PASSWORD" --cluster-type SERVERLESS;
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
             exit "$exitcode"
           fi
-          
+
           # get connection info
           ticloud cluster list 1372813089206721319 -o json > cluster
           exitcode="$?"
@@ -53,7 +55,7 @@ jobs:
             cat cluster
             exit "$exitcode"
           fi
-          
+
           jq -e '[.items[] | select(.name == "ci-compatibility-tls-test")] | length == 1' cluster > /dev/null
           user=$(jq -er '.items[] | select(.name == "ci-compatibility-tls-test") | .status.connection_strings.default_user | select(type == "string" and length > 0)' cluster)
           host=$(jq -er '.items[] | select(.name == "ci-compatibility-tls-test") | .status.connection_strings.standard.host | select(type == "string" and length > 0)' cluster)
@@ -87,7 +89,9 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test on ${{ matrix.os }}
-        run: mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }} -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+        env:
+          MYSQL_PWD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${{ matrix.cert }}
 
   no_tls:
     needs: setup
@@ -106,7 +110,9 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test
-        run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P ${{ matrix.port }} -D test --ssl-mode=DISABLED -p${{ secrets.TIDB_CLOUD_PASSWORD }}"
+        env:
+          MYSQL_PWD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: "! mysql -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P ${{ matrix.port }} -D test --ssl-mode=DISABLED"
 
   invalid_tls_version:
     needs: setup
@@ -121,12 +127,18 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
-      - name: Run test on ${{ matrix.tls }}
+      - name: Prepare connection test
         run: |
           # Starting from 8.0.26, TLSv1 & TLSv1.1 are deprecated. From 8.0.28, they are completely removed.
           pip3 install mysql-connector-python==8.0.25 --break-system-packages
           cd example_code/python
-          ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+
+      - name: Run test on ${{ matrix.tls }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/python
+          ! python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   valid_tls_version:
     needs: setup
@@ -141,11 +153,17 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
-      - name: Run test on ${{ matrix.tls }}
+      - name: Prepare connection test
         run: |
           pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
-          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{secrets.TIDB_CLOUD_PASSWORD}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
+
+      - name: Run test on ${{ matrix.tls }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/python
+          python3 tls_version.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ matrix.port }} ${{needs.setup.outputs.TIDB_CLOUD_USER}} /etc/ssl/certs/ca-certificates.crt ${{ matrix.tls }}
 
   mycli:
     needs: setup
@@ -174,8 +192,10 @@ jobs:
         run: pip3 install mycli --break-system-packages
 
       - name: Run test on ${{ matrix.os }}
+        env:
+          MYSQL_PWD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run:
-          mycli -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-ca=${{ matrix.cert }} --ssl-verify-server-cert -p${{ secrets.TIDB_CLOUD_PASSWORD}}
+          mycli -u ${{needs.setup.outputs.TIDB_CLOUD_USER}} -h ${{needs.setup.outputs.TIDB_CLOUD_HOST}} -P 4000 -D test --ssl-ca=${{ matrix.cert }} --ssl-verify-server-cert
 
   java_jdbc:
     needs: setup
@@ -192,20 +212,35 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-      - name: Run test on ubuntu or macos
+      - name: Prepare connection test
         if: ${{ matrix.os != 'windows-2022' }}
         run: |
           cd example_code/java
           javac ConnectTest.java
-          java -cp mysql-connector-j-8.0.31.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
 
-      - name: Run test on windows
+      - name: Run test on ubuntu or macos
+        if: ${{ matrix.os != 'windows-2022' }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/java
+          java -cp mysql-connector-j-8.0.31.jar: ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}}
+
+      - name: Prepare connection test
         if: ${{ matrix.os == 'windows-2022' }}
         # Need to use Chinese semicolon and an extra space before ConnectTest （don't know why）
         run: |
           cd example_code/java
           javac ConnectTest.java
-          java -cp mysql-connector-j-8.0.31.jar； ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on windows
+        if: ${{ matrix.os == 'windows-2022' }}
+        # Need to use Chinese semicolon and an extra space before ConnectTest （don't know why）
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/java
+          java -cp mysql-connector-j-8.0.31.jar； ConnectTest ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}}
 
   # https://jira.mariadb.org/browse/CONJ-1023
   java_jdbc_mariadb_CONJ-1023:
@@ -220,11 +255,17 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-      - name: Run test
+      - name: Prepare connection test
         run: |
           cd example_code/java
           javac ConnectTestMariaDB.java
-          java -cp mariadb-java-client-3.0.9.jar: ConnectTestMariaDB ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/java
+          java -cp mariadb-java-client-3.0.9.jar: ConnectTestMariaDB ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{needs.setup.outputs.TIDB_CLOUD_HOST}}
 
   python_mysqlclient:
     needs: setup
@@ -251,11 +292,17 @@ jobs:
           brew install mysql-client
           export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
           pip3 install mysqlclient --break-system-packages
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           pip3 install mysqlclient --break-system-packages
           cd example_code/python
-          python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/python
+          python3 ConnectTest_mysqlclient.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ matrix.cert }}
 
   python_mysql_connector:
     needs: setup
@@ -276,11 +323,17 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           pip3 install mysql-connector-python --break-system-packages
           cd example_code/python
-          python3 ConnectTest_mysql-connector-python.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/python
+          python3 ConnectTest_mysql-connector-python.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ matrix.cert }}
 
   python_pymysql:
     needs: setup
@@ -301,11 +354,17 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           pip3 install pymysql --break-system-packages
           cd example_code/python
-          python3 ConnectTest_pymysql.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}        
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/python
+          python3 ConnectTest_pymysql.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ matrix.cert }}
 
   python_sqlalchemy:
     needs: setup
@@ -332,12 +391,18 @@ jobs:
           brew install mysql-client
           export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
           pip3 install mysqlclient --break-system-packages
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           pip3 install mysqlclient --break-system-packages
           pip3 install sqlalchemy --break-system-packages
           cd example_code/sqlalchemy
-          python3 ConnectTest.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{ matrix.cert }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/sqlalchemy
+          python3 ConnectTest.py ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ matrix.cert }}
 
   go_godriver:
     needs: setup
@@ -354,11 +419,17 @@ jobs:
         with:
           go-version-file: 'example_code/go/go.mod'
           cache-dependency-path: 'example_code/go/go.sum'
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           cd example_code/go
           go mod tidy
-          go run ConnectTest.go ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/go
+          go run ConnectTest.go ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   go_gorm:
     needs: setup
@@ -375,11 +446,17 @@ jobs:
         with:
           go-version-file: 'example_code/gorm/go.mod'
           cache-dependency-path: 'example_code/gorm/go.sum'
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           cd example_code/gorm
           go mod tidy
-          go run ConnectTest.go ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/gorm
+          go run ConnectTest.go ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   node_mysql2:
     needs: setup
@@ -395,11 +472,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           cd example_code/node
           npm install --save mysql2
-          node ConnectTest.js ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/node
+          node ConnectTest.js ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   node_sequelize:
     needs: setup
@@ -415,12 +498,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - name: Run test on ${{ matrix.os }}
+      - name: Prepare connection test
         run: |
           cd example_code/sequelize
           npm install --save mysql2
           npm install --save sequelize
-          node ConnectTest.js ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/sequelize
+          node ConnectTest.js ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   rust_mysql:
     needs: setup
@@ -435,9 +524,11 @@ jobs:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run: |
           cd example_code/rust
-          cargo run ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+          cargo run ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   ruby_mysql2:
     needs: setup
@@ -454,20 +545,34 @@ jobs:
         with:
           ruby-version: '3.0' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: Install mysql on macos
+      - name: Prepare connection test
         if: ${{ matrix.os == 'macos-14' }}
         run: |
           brew install mysql@8.0
           cd example_code/ruby
           # https://github.com/Homebrew/homebrew-core/issues/130258
           gem install mysql2 -- --with-mysql-dir=$(brew --prefix mysql@8.0)
-          ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
-      - name: Run test on ubuntu
+
+      - name: Install mysql on macos
+        if: ${{ matrix.os == 'macos-14' }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/ruby
+          ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
+      - name: Prepare connection test
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: |
           cd example_code/ruby
           gem install mysql2
-          ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }}
+
+      - name: Run test on ubuntu
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/ruby
+          ruby ConnectTest.rb ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}}
 
   php_mysqli:
     needs: setup
@@ -492,9 +597,11 @@ jobs:
           php-version: '8.1'
           ini-values: extension=php_mysqli.dll
       - name: Run test on ${{ matrix.os }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run: |
           cd example_code/php
-          php ConnectTest.php ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
+          php ConnectTest.php ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{matrix.cert}}
 
   cpp_libmysqlclient:
     needs: setup
@@ -513,7 +620,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: rlalik/setup-cpp-compiler@v1.2
-      - name: Run test on macos
+      - name: Prepare connection test
         if: ${{ matrix.os == 'macos-14' }}
         run: |
           brew install mysql-client
@@ -521,11 +628,25 @@ jobs:
           flags=$(pkg-config --cflags --libs mysqlclient)
           cd example_code/cpp
           eval "g++ ConnectTest.cpp -o test $flags"
-          ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
-      - name: Run test on ubuntu
+
+      - name: Run test on macos
+        if: ${{ matrix.os == 'macos-14' }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/cpp
+          ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{matrix.cert}}
+      - name: Prepare connection test
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: |
           sudo apt install -y libmysqlclient-dev
           cd example_code/cpp
           g++ ConnectTest.cpp -o test -I/usr/include/mysql -lmysqlclient
-          ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{ secrets.TIDB_CLOUD_PASSWORD }} ${{matrix.cert}}
+
+      - name: Run test on ubuntu
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
+        run: |
+          cd example_code/cpp
+          ./test ${{needs.setup.outputs.TIDB_CLOUD_HOST}} ${{needs.setup.outputs.TIDB_CLOUD_USER}} ${{matrix.cert}}

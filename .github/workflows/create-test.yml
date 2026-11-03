@@ -63,17 +63,19 @@ jobs:
           api_private_key: ${{ secrets.CREATE_TEST_PRIVATE_KEY }}
 
       - name: Create cluster
+        env:
+          TIDB_PASSWORD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run: |
           set +e
           PROJECT_ID=1372813089447741295
-          result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ci-create-test-${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS`
+          result=`ticloud cluster create -p  $PROJECT_ID --cluster-name ci-create-test-${{ matrix.region }} --cloud-provider AWS -r ${{ matrix.region }} --root-password "$TIDB_PASSWORD" --cluster-type SERVERLESS`
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
             echo $result
             exit "$exitcode"
           fi
           echo $result
-          
+
           id=`echo $result | sed 's/[^0-9]//g'`
           ticloud cluster get -p $PROJECT_ID -c $id > ${{ matrix.region }}
           exitcode="$?"
@@ -115,8 +117,10 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: Run test
+        env:
+          MYSQL_PWD: ${{ secrets.TIDB_CLOUD_PASSWORD }}
         run: |
-          mysql -u ${{ env.CLUSTER_USER }} -h ${{ env.CLUSTER_HOST }} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.TIDB_CLOUD_PASSWORD }}
+          mysql -u ${{ env.CLUSTER_USER }} -h ${{ env.CLUSTER_HOST }} -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
       - name: Delete cluster & branch
         run: |

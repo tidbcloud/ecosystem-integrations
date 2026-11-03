@@ -1,3 +1,4 @@
+import os
 import MySQLdb
 import sys
 import platform
@@ -6,10 +7,10 @@ kwargs = {
   "host": sys.argv[1],
   "port": 4000,
   "user": sys.argv[2],
-  "password": sys.argv[3],
+  "password": os.environ["TIDB_PASSWORD"],
   "database": "test",
   "ssl": {
-    "ca": sys.argv[4]
+    "ca": sys.argv[3]
   }
 }
 if platform.system() != 'Windows':

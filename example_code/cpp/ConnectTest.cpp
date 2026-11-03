@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "mysql.h"
 
 using namespace std;
@@ -13,8 +14,8 @@ int main(int argc, char *argv[]) {
     mysql_init(&mysql);
     mysql_options4(&mysql, MYSQL_OPT_CONNECT_ATTR_ADD, "program_name", "pingcap/serverless-test");
     mysql_options(&mysql, MYSQL_OPT_SSL_MODE, &ssl_mode);
-    mysql_options(&mysql, MYSQL_OPT_SSL_CA, argv[4]);
-    conn = mysql_real_connect(&mysql, argv[1], argv[2], argv[3], "test", 4000, NULL, 0);
+    mysql_options(&mysql, MYSQL_OPT_SSL_CA, argv[3]);
+    conn = mysql_real_connect(&mysql, argv[1], argv[2], std::getenv("TIDB_PASSWORD"), "test", 4000, NULL, 0);
 
     mysql_query(conn, "SHOW DATABASES");
     resultset = mysql_store_result(conn);

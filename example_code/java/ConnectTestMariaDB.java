@@ -2,15 +2,15 @@ import java.sql.*;
 
 public class ConnectTestMariaDB {
   public static void main(String args[]) throws Exception {
-    if (args.length != 3) {
-      throw new Error("Usage: java ConnectTest <user> <host> <password>");
+    if (args.length != 2) {
+      throw new Error("Usage: java ConnectTest <user> <host> (set TIDB_PASSWORD)");
     }
     String user = args[0];
     String host = args[1];
-    String password = args[2];
+    String password = System.getenv("TIDB_PASSWORD");
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-        "jdbc:mariadb://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=verify-full&connectionAttributes=program_name:pingcap/serverless-test"
+        "jdbc:mariadb://" + host + ":4000/test?sslMode=verify-full&connectionAttributes=program_name:pingcap/serverless-test", user, password
       );
       Statement stmt = conn.createStatement();
       try {

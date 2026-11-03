@@ -7,7 +7,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let host = &args[1];
     let user = &args[2];
-    let password = &args[3];
+    let password = env::var("TIDB_PASSWORD").expect("TIDB_PASSWORD is required");
 
     let database_url = format!("mysql://{}:{}@{}:4000/test", &user, &password, &host);
 

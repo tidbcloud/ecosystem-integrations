@@ -48,6 +48,7 @@ module.exports = {
       },
       {
         key: 'password',
+        type: 'password',
         required: true,
         label: 'Private Key',
       },
