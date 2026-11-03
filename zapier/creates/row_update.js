@@ -15,6 +15,7 @@ const perform = async (z, bundle) => {
   }
 
   let sql = `update ${table} set `
+  const values = []
   let index = 0
   for (let i = 0; i < rows.length; i++) {
     if (
@@ -24,15 +25,17 @@ const perform = async (z, bundle) => {
       continue
     }
     if (index > 0) {
-      sql += `,${rows[i].Field} = '${bundle.inputData[rows[i].Field]}'`
+      sql += `,${rows[i].Field} = ?`
     } else {
-      sql += `${rows[i].Field} = '${bundle.inputData[rows[i].Field]}'`
+      sql += `${rows[i].Field} = ?`
     }
+    values.push(bundle.inputData[rows[i].Field])
     index++
   }
-  sql += ` where ${bundle.inputData.id_column} = ${bundle.inputData.id_column_value}`
+  sql += ` where ${bundle.inputData.id_column} = ?`
+  values.push(bundle.inputData.id_column_value)
 
-  const [_, error1] = await query(host, user, port, tidbPassword, database, sql)
+  const [_, error1] = await query(host, user, port, tidbPassword, database, sql, values)
   if (error1) {
     throw new z.errors.Error(`Execute SQL error: ${error1}`)
   }
