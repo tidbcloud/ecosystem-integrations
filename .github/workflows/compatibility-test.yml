@@ -5,6 +5,13 @@ on:
     - cron: "0 22 * * *"  # every day at 22:00
   workflow_dispatch:
 
+concurrency:
+  group: serverless-compatibility-test
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   setup:
     runs-on: ubuntu-24.04
@@ -12,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up ticloud
         uses: tidbcloud/setup-tidbcloud-cli@v0
@@ -22,28 +31,16 @@ jobs:
 
       - name: Get Connection Info
         run: |
-          # delete cluster if exists
-          set +e
           ticloud cluster list 1372813089206721319 -o json > cluster
-          exitcode="$?"
-          if [[ "$exitcode" != "0" ]]; then
-            cat cluster
-            exit "$exitcode"
-          fi
-          
-          total=$(jq '.total' cluster);
-          for i in $(seq 1 $total);
-          do
-          id=`echo $(jq ".items[$i-1].id" cluster) | sed 's/"//g'`
-          ticloud cluster delete -p 1372813089206721319 -c $id --force;
-          exitcode="$?"
-          if [[ "$exitcode" != "0" ]]; then
-            exit "$exitcode"
-          fi
-          done
-
+          jq -e '(.items | type == "array") and all(.items[]; (.name | type == "string") and (.id | type == "string"))' cluster > /dev/null
+          jq -r '.items[] | select((.name == "ci-compatibility-tls-test")) | [.id, .name] | @tsv' cluster > clusters-to-delete
+          while IFS=$'\t' read -r id name; do
+            [[ "$id" =~ ^[0-9]+$ ]] || { echo "Invalid cluster ID" >&2; exit 1; }
+            echo "Deleting project=1372813089206721319 cluster=$id name=$name run=$GITHUB_RUN_ID attempt=$GITHUB_RUN_ATTEMPT"
+            ticloud cluster delete -p 1372813089206721319 -c "$id" --force
+          done < clusters-to-delete
           # create cluster
-          ticloud cluster create --project-id 1372813089206721319 --cluster-name tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
+          ticloud cluster create --project-id 1372813089206721319 --cluster-name ci-compatibility-tls-test --cloud-provider AWS -r us-east-1 --root-password ${{ secrets.TIDB_CLOUD_PASSWORD }} --cluster-type SERVERLESS;
           exitcode="$?"
           if [[ "$exitcode" != "0" ]]; then
             exit "$exitcode"
@@ -57,9 +54,11 @@ jobs:
             exit "$exitcode"
           fi
           
-          cat cluster
-          echo "TIDB_CLOUD_USER=$(jq '.items[0].status.connection_strings.default_user' cluster)" >> $GITHUB_ENV
-          echo "TIDB_CLOUD_HOST=$(jq '.items[0].status.connection_strings.standard.host' cluster)" >> $GITHUB_ENV
+          jq -e '[.items[] | select(.name == "ci-compatibility-tls-test")] | length == 1' cluster > /dev/null
+          user=$(jq -er '.items[] | select(.name == "ci-compatibility-tls-test") | .status.connection_strings.default_user | select(type == "string" and length > 0)' cluster)
+          host=$(jq -er '.items[] | select(.name == "ci-compatibility-tls-test") | .status.connection_strings.standard.host | select(type == "string" and length > 0)' cluster)
+          echo "TIDB_CLOUD_USER=$user" >> "$GITHUB_ENV"
+          echo "TIDB_CLOUD_HOST=$host" >> "$GITHUB_ENV"
     outputs:
       TiDB_CLOUD_USER: ${{ env.TIDB_CLOUD_USER }}
       TiDB_CLOUD_HOST: ${{ env.TIDB_CLOUD_HOST }}
@@ -81,6 +80,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
@@ -98,6 +99,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Get mysql
         uses: shogo82148/actions-setup-mysql@v1
@@ -115,6 +118,8 @@ jobs:
         port: [ 4000, 3306 ]
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Run test on ${{ matrix.tls }}
         run: |
@@ -133,6 +138,8 @@ jobs:
         port: [ 4000, 3306 ]
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Run test on ${{ matrix.tls }}
         run: |
@@ -157,6 +164,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install python
         uses: actions/setup-python@v5
@@ -177,6 +186,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
@@ -203,6 +214,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
@@ -229,6 +242,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
@@ -258,6 +273,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -281,6 +298,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -304,6 +323,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
       - name: Install mysql in macos
         if: ${{ matrix.os == 'macos-14' }}
@@ -327,6 +348,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/go/go.mod'
@@ -346,6 +369,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'example_code/gorm/go.mod'
@@ -365,6 +390,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 16
@@ -383,6 +410,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 16
@@ -402,6 +431,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Run test on ${{ matrix.os }}
         run: |
@@ -417,6 +448,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0' # Not needed with a .ruby-version file
@@ -452,6 +485,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
@@ -475,6 +510,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: rlalik/setup-cpp-compiler@v1.2
       - name: Run test on macos
         if: ${{ matrix.os == 'macos-14' }}

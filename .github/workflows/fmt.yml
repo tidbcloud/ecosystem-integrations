@@ -6,12 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   fmt-zapier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: sane-fmt/action@master
+        with:
+          persist-credentials: false
+      - uses: sane-fmt/action@1bb3e94df193e0cf3dc36007d800ce389e8a6391 # master
         with:
           args: |
             - --details=diff
