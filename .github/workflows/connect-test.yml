@@ -24,11 +24,15 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: connect cluster us-east-1
+        env:
+          MYSQL_PWD: ${{ secrets.CLUSTER_PSWD_US_EAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }}  -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_US_EAST_1 }}
+          mysql --connect-timeout 15 -u 'nADWvyBQFXhgZxw.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }}  -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
       - name: connect branch us-east-1
+        env:
+          MYSQL_PWD: ${{ secrets.BRANCH_PSWD_US_EAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u '4ZT7LxxVy4JJoaH.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_EAST_1 }}
+          mysql --connect-timeout 15 -u '4ZT7LxxVy4JJoaH.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
   us-west-2:
     strategy:
@@ -45,11 +49,15 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: connect cluster us-west-2
+        env:
+          MYSQL_PWD: ${{ secrets.CLUSTER_PSWD_US_WEST_2 }}
         run: |
-          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_US_WEST_2 }}
+          mysql --connect-timeout 15 -u 'j24i5KNxRJpvEj7.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
       - name: connect branch us-west-2
+        env:
+          MYSQL_PWD: ${{ secrets.BRANCH_PSWD_US_WEST_2 }}
         run: |
-          mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_US_WEST_2 }}
+          mysql --connect-timeout 15 -u '23MRMbs1xyFmALz.root' -h gateway01.us-west-2.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
   ap-northeast-1:
     strategy:
@@ -66,12 +74,16 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: connect cluster ap-northeast-1
+        env:
+          MYSQL_PWD: ${{ secrets.CLUSTER_PSWD_AP_NORTHEAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_AP_NORTHEAST_1 }}  
+          mysql --connect-timeout 15 -u 'Nv7fzTqtB8V698S.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
       - name: connect branch ap-northeast-1
+        env:
+          MYSQL_PWD: ${{ secrets.BRANCH_PSWD_AP_NORTHEAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u '3JwPQ7c8B1Bva6f.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_NORTHEAST_1 }}    
+          mysql --connect-timeout 15 -u '3JwPQ7c8B1Bva6f.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
   ap-southeast-1:
     strategy:
@@ -88,12 +100,16 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: connect cluster ap-southeast-1
+        env:
+          MYSQL_PWD: ${{ secrets.CLUSTER_PSWD_AP_SOUTHEAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_AP_SOUTHEAST_1 }} 
+          mysql --connect-timeout 15 -u 'eQsaVQSBNukNp7k.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
       - name: connect branch ap-southeast-1
+        env:
+          MYSQL_PWD: ${{ secrets.BRANCH_PSWD_AP_SOUTHEAST_1 }}
         run: |
-          mysql --connect-timeout 15 -u 'pSs1wenmQSbzevk.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_AP_SOUTHEAST_1 }}    
+          mysql --connect-timeout 15 -u 'pSs1wenmQSbzevk.root' -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
   eu-central-1:
     strategy:
@@ -110,12 +126,16 @@ jobs:
         uses: shogo82148/actions-setup-mysql@v1
 
       - name: connect cluster eu-central-1
+        env:
+          MYSQL_PWD: ${{ secrets.CLUSTER_PSWD_EU_CENTRAL_1 }}
         run: |
-          mysql --connect-timeout 15 -u 'Bxoh2PviimqNru3.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.CLUSTER_PSWD_EU_CENTRAL_1 }}
+          mysql --connect-timeout 15 -u 'Bxoh2PviimqNru3.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
 
       - name: connect branch eu-central-1
+        env:
+          MYSQL_PWD: ${{ secrets.BRANCH_PSWD_EU_CENTRAL_1 }}
         run: |
-          mysql --connect-timeout 15 -u '3qcaCc1BYPFFUqV.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt -p${{ secrets.BRANCH_PSWD_EU_CENTRAL_1 }}
+          mysql --connect-timeout 15 -u '3qcaCc1BYPFFUqV.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P ${{ matrix.port }} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/certs/ca-certificates.crt
 
 

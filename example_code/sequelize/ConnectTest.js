@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("test", process.argv[3], process.argv[4], {
+const sequelize = new Sequelize("test", process.argv[3], process.env.TIDB_PASSWORD, {
     host: process.argv[2],
     port: 4000,
     dialect: 'mysql',

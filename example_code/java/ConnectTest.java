@@ -2,15 +2,15 @@ import java.sql.*;
 
 public class ConnectTest {
   public static void main(String args[]) throws Exception {
-    if (args.length != 3) {
-      throw new Error("Usage: java ConnectTest <user> <host> <password>");
+    if (args.length != 2) {
+      throw new Error("Usage: java ConnectTest <user> <host> (set TIDB_PASSWORD)");
     }
     String user = args[0];
     String host = args[1];
-    String password = args[2];
+    String password = System.getenv("TIDB_PASSWORD");
     try {
       java.sql.Connection conn = DriverManager.getConnection(
-        "jdbc:mysql://" + host + ":4000/test?user=" + user + "&password=" + password + "&sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3&connectionAttributes=program_name:pingcap/serverless-test"
+        "jdbc:mysql://" + host + ":4000/test?sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3&connectionAttributes=program_name:pingcap/serverless-test", user, password
       );
       Statement stmt = conn.createStatement();
       try {
