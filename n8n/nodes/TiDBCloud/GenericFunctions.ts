@@ -10,6 +10,17 @@ import mysql2 from 'mysql2/promise';
 import {IExecuteFunctions} from "n8n-core";
 import { HttpMethod, request, RequestOptions } from 'urllib';
 
+// mysql2 2.x exports escapeId at runtime but omits it from its module declarations.
+const escapeId: (identifier: string, forbidQualified: boolean) => string = require('mysql2').escapeId;
+
+export function escapeIdentifier(identifier: string): string {
+	if (typeof identifier !== 'string' || identifier.length === 0) {
+		throw new Error('SQL identifier must be a non-empty string');
+	}
+	// Resource locator values are literal names, including any dots.
+	return escapeId(identifier, true);
+}
+
 /**
  * Returns of copy of the items which only contains the json data and
  * of that only to define properties
@@ -250,11 +261,11 @@ export async function searchTables(
 	const sql = `
 		SELECT table_name
 		FROM information_schema.tables
-		WHERE table_schema = '${database}'
-			and table_name like '%${query || ''}%'
+		WHERE table_schema = ?
+			and table_name like ?
 		ORDER BY table_name
 	`;
-	const [rows] = await connection.query(sql);
+	const [rows] = await connection.query(sql, [database, `%${query || ''}%`]);
 	const results = (rows as IDataObject[]).map(r => ({
 		name: r.table_name as string,
 		value: r.table_name as string,

@@ -16,6 +16,7 @@ import {
 	copyInputItems,
 	createCluster,
 	createConnection,
+	escapeIdentifier,
 	searchCluster,
 	searchProject,
 	searchTables,
@@ -567,10 +568,13 @@ export class TiDBCloud implements INodeType {
 				const options = this.getNodeParameter('options', 0) as IDataObject;
 				const insertIgnore = options.ignore as boolean;
 				const insertPriority = options.priority as string;
+				if (insertPriority && !['LOW_PRIORITY', 'HIGH_PRIORITY'].includes(insertPriority)) {
+					throw new NodeOperationError(this.getNode(), 'Invalid INSERT priority');
+				}
 
 				const insertSQL = `INSERT ${insertPriority || ''} ${
 					insertIgnore ? 'IGNORE' : ''
-				} INTO ${table}(${columnString}) VALUES ${items
+				} INTO ${escapeIdentifier(table)}(${columns.map(escapeIdentifier).join(',')}) VALUES ${items
 					.map((item) => insertPlaceholder)
 					.join(',')};`;
 				const queryItems = insertItems.reduce(
@@ -604,9 +608,9 @@ export class TiDBCloud implements INodeType {
 				}
 
 				const updateItems = copyInputItems(items, columns);
-				const updateSQL = `UPDATE ${table} SET ${columns
-					.map((column) => `${column} = ?`)
-					.join(',')} WHERE ${updateKey} = ?;`;
+				const updateSQL = `UPDATE ${escapeIdentifier(table)} SET ${columns
+					.map((column) => `${escapeIdentifier(column)} = ?`)
+					.join(',')} WHERE ${escapeIdentifier(updateKey)} = ?;`;
 				const queryQueue = updateItems.map((item) =>
 					connection.query(updateSQL, Object.values(item).concat(item[updateKey])),
 				);
@@ -630,7 +634,7 @@ export class TiDBCloud implements INodeType {
 			const table = this.getNodeParameter('table', 0, '', { extractValue: true }) as string;
 			const deleteKey = this.getNodeParameter('deleteKey', 0) as string;
 			const deleteItems = copyInputItems(items, [deleteKey]);
-			const deleteSQL = `DELETE FROM ${table} WHERE ${deleteKey} =  ?;`;
+			const deleteSQL = `DELETE FROM ${escapeIdentifier(table)} WHERE ${escapeIdentifier(deleteKey)} =  ?;`;
 			const queryItems = deleteItems.reduce(
 				(collection, item) => collection.concat(Object.values(item as any)), // tslint:disable-line:no-any
 				[],
