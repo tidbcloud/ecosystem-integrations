@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // triggers on a new row with a certain tag
 const query = require('../tidb_client/PromiseClient')
 const request = require('../tidb_client/TiDBCloudClient')
@@ -20,7 +21,8 @@ const perform = async (z, bundle) => {
       database,
       `select COLUMN_NAME,COLUMN_KEY
                    from INFORMATION_SCHEMA.COLUMNS
-                   where table_name = '${table}'`,
+                   where table_name = ?`,
+      [table],
     )
     if (error) {
       throw new z.errors.Error(`Execute SQL error: ${error}`)
@@ -50,8 +52,9 @@ const perform = async (z, bundle) => {
     database,
     `select COLUMN_NAME
                  from INFORMATION_SCHEMA.COLUMNS
-                 where table_name = '${table}'
+                 where table_name = ?
                    and COLUMN_NAME = 'id';`,
+    [table],
   )
   if (error2) {
     throw new z.errors.Error(`Execute SQL error: ${error2}`)
@@ -61,14 +64,14 @@ const perform = async (z, bundle) => {
   // if has id column, use id, else rename dedupe_key as id
   let sql
   if (!has_id_column) {
-    sql = `select *, ${dedupe_key} as id
-           from ${table}`
+    sql = `select *, ${escapeIdentifier(dedupe_key)} as id
+           from ${escapeIdentifier(table)}`
   } else {
     sql = `select *
-           from ${table}`
+           from ${escapeIdentifier(table)}`
   }
   if (bundle.inputData.order_by !== undefined) {
-    sql += ` order by ${bundle.inputData.order_by} desc`
+    sql += ` order by ${escapeIdentifier(bundle.inputData.order_by)} desc`
   }
   sql += ` limit 10000`
 
