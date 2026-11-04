@@ -34,7 +34,7 @@ test.each(["O'Reilly", "changed' WHERE 1=1 -- "])(
       4000,
       'test',
       'test',
-      'update users set name = ?,age = ? where id = ?',
+      'update `users` set `name` = ?,`age` = ? where `id` = ?',
       [name, 20, 1],
     )
   },
@@ -53,7 +53,7 @@ test.each(['1 OR 1=1', 'customer-123'])(
       4000,
       'test',
       'test',
-      'update users set name = ? where id = ?',
+      'update `users` set `name` = ? where `id` = ?',
       ['updated', id],
     )
   },
@@ -68,7 +68,7 @@ test.each([undefined, null, ''])('continues skipping empty update value %s', asy
     4000,
     'test',
     'test',
-    'update users set age = ? where id = ?',
+    'update `users` set `age` = ? where `id` = ?',
     [0, 1],
   )
 })

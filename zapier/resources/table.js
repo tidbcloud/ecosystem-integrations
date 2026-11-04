@@ -14,7 +14,8 @@ const performList = async (z, bundle) => {
     port,
     tidbPassword,
     database,
-    `select tidb_table_id,table_name from information_schema.tables where table_schema='${bundle.inputData.database}'`,
+    `select tidb_table_id,table_name from information_schema.tables where table_schema = ?`,
+    [database],
   )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
@@ -57,7 +58,8 @@ const performSearch = async (z, bundle) => {
     port,
     tidbPassword,
     database,
-    `select table_name from information_schema.tables where table_schema='${bundle.inputData.database}' and table_name='${bundle.inputData.table}'`,
+    `select table_name from information_schema.tables where table_schema = ? and table_name = ?`,
+    [database, bundle.inputData.table],
   )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)

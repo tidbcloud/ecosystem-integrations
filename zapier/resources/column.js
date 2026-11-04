@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // get a list of columns
 const query = require('../tidb_client/PromiseClient')
 const performList = async (z, bundle) => {
@@ -8,7 +9,14 @@ const performList = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `show columns from ${escapeIdentifier(table)}`,
+  )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
   }

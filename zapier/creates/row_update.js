@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // create a particular row_update by name
 const query = require('../tidb_client/PromiseClient')
 const request = require('../tidb_client/TiDBCloudClient')
@@ -9,12 +10,19 @@ const perform = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `show columns from ${escapeIdentifier(table)}`,
+  )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
 
-  let sql = `update ${table} set `
+  let sql = `update ${escapeIdentifier(table)} set `
   const values = []
   let index = 0
   for (let i = 0; i < rows.length; i++) {
@@ -25,14 +33,14 @@ const perform = async (z, bundle) => {
       continue
     }
     if (index > 0) {
-      sql += `,${rows[i].Field} = ?`
+      sql += `,${escapeIdentifier(rows[i].Field)} = ?`
     } else {
-      sql += `${rows[i].Field} = ?`
+      sql += `${escapeIdentifier(rows[i].Field)} = ?`
     }
     values.push(bundle.inputData[rows[i].Field])
     index++
   }
-  sql += ` where ${bundle.inputData.id_column} = ?`
+  sql += ` where ${escapeIdentifier(bundle.inputData.id_column)} = ?`
   values.push(bundle.inputData.id_column_value)
 
   const [_, error1] = await query(host, user, port, tidbPassword, database, sql, values)
@@ -88,7 +96,14 @@ const rowFields = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `show columns from ${escapeIdentifier(table)}`,
+  )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
   }

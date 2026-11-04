@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // create a particular row by name
 const query = require('../tidb_client/PromiseClient')
 const request = require('../tidb_client/TiDBCloudClient')
@@ -9,7 +10,14 @@ const perform = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `show columns from ${escapeIdentifier(table)}`,
+  )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
   }
@@ -25,10 +33,10 @@ const perform = async (z, bundle) => {
     }
     data[index] = bundle.inputData[rows[i].Field]
     if (index > 0) {
-      columns += `,${rows[i].Field}`
+      columns += `,${escapeIdentifier(rows[i].Field)}`
       values += ',?'
     } else {
-      columns += `(${rows[i].Field}`
+      columns += `(${escapeIdentifier(rows[i].Field)}`
       values += '(?'
     }
     index++
@@ -42,7 +50,7 @@ const perform = async (z, bundle) => {
     port,
     tidbPassword,
     database,
-    `insert into ${table} ${columns} values ${values}`,
+    `insert into ${escapeIdentifier(table)} ${columns} values ${values}`,
     data,
   )
   if (error2) {
@@ -64,7 +72,14 @@ const rowFields = async (z, bundle) => {
   const database = bundle.inputData.database
   const table = bundle.inputData.table
 
-  const [rows, error] = await query(host, user, port, tidbPassword, database, `show columns from ${table}`)
+  const [rows, error] = await query(
+    host,
+    user,
+    port,
+    tidbPassword,
+    database,
+    `show columns from ${escapeIdentifier(table)}`,
+  )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
   }

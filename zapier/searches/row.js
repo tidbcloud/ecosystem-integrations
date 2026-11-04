@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // find a particular row by name
 const query = require('../tidb_client/PromiseClient')
 const request = require('../tidb_client/TiDBCloudClient')
@@ -15,7 +16,7 @@ const perform = async (z, bundle) => {
     port,
     tidbPassword,
     database,
-    `select * from ${table} where ${bundle.inputData.lookup_column} = ?`,
+    `select * from ${escapeIdentifier(table)} where ${escapeIdentifier(bundle.inputData.lookup_column)} = ?`,
     [bundle.inputData.lookup_value],
   )
   if (error) {

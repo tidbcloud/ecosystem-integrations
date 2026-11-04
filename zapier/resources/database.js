@@ -1,3 +1,4 @@
+const escapeIdentifier = require('../tidb_client/escapeIdentifier')
 // get a list of databases
 const query = require('../tidb_client/PromiseClient')
 const request = require('../tidb_client/TiDBCloudClient')
@@ -40,7 +41,7 @@ const performCreate = async (z, bundle) => {
     port,
     tidbPassword,
     null,
-    `create database if not exists ${bundle.inputData.database}`,
+    `create database if not exists ${escapeIdentifier(bundle.inputData.database)}`,
   )
   if (error) {
     throw new z.errors.Error(`Execute SQL error: ${error}`)
