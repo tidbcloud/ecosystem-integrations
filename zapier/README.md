@@ -2,6 +2,10 @@
 
 See [Integrate TiDB Cloud with Zapier](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-zapier)
 
+Use a dedicated database user with only the permissions needed by the Zap, scoped to its tables or database. Replace the default **TiDB User** with that username and use its password; avoid the cluster's default administrative account for routine workflows.
+
+**Custom Query** and **Create Table** execute SQL supplied by the Zap author with the configured database user's permissions. Keep **Query** and **Table DDL** under the author's control. Do not map untrusted webhook, email or form data into those fields or concatenate it into SQL. Use the structured row actions and search for external data values instead. Restrict access to editing Zaps and their connection settings.
+
 # Dev Guide
 
 ### Requirements

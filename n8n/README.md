@@ -40,6 +40,17 @@ TiDB Cloud Node acts as a [regular node](https://docs.n8n.io/workflows/nodes/#re
 
 Here is an example usage, click [here](./doc/example_usage.md) to find more information.
 
+### Database permissions and external input
+
+Use a dedicated database user with only the permissions needed by the workflow, scoped to its tables or database. For example, a lookup workflow needs `SELECT`; do not use the cluster's default administrative account for routine workflows. In **User**, choose **Name** to enter a dedicated username and supply that user's password. Creating a cluster sets its initial root password; it does not require subsequent workflows to use root.
+
+**Execute SQL** runs SQL chosen by the workflow author with the configured database user's permissions. Keep the SQL under the author's control. Do not map an untrusted request to the whole SQL field or interpolate external values into SQL text. Bind external values using **Query Parameters** instead:
+
+- **SQL**: `SELECT id, name FROM users WHERE email = ?`
+- **Query Parameters** (expression): `{{ [$json.email] }}`
+
+Query Parameters accepts a JSON array, such as `["alice@example.com"]`, or an expression returning an array. Values bind to `?` placeholders in order, separately for each input item. Placeholders represent values, not table names, column names or SQL fragments. Existing workflows that interpolate external values into SQL must move those values to Query Parameters; adding this field does not automatically secure existing SQL expressions.
+
 ## Fields Description
 
 Different operations require different fields to be filled in. The following shows the respective field descriptions according to the operation.
@@ -63,6 +74,7 @@ Different operations require different fields to be filled in. The following sho
 - **User**: The username of your TiDB Cloud cluster.
 - **Database**: The database name.
 - **SQL**: The SQL statement to execute.
+- **Query Parameters**: A JSON array of values for `?` placeholders in SQL. Defaults to `[]` for statements without parameters.
 
 ### Delete
 
