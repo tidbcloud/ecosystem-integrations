@@ -42,6 +42,7 @@ async function queryWithTimeOut(host, user, port, password, database, timeout, s
         ssl: {
           minVersion: 'TLSv1.2',
           rejectUnauthorized: true,
+          verifyIdentity: true,
         },
       })
       promisePool = pool.promise()

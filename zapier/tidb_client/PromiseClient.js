@@ -40,6 +40,7 @@ async function query(host, user, port, password, database, sql, values) {
       ssl: {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: true,
+        verifyIdentity: true,
       },
     })
     const [rows, filed] = await connection.execute(sql, values)
