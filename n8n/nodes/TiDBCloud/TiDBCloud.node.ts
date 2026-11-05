@@ -147,6 +147,12 @@ export class TiDBCloud implements INodeType {
 							searchFilterRequired: false,
 						},
 					},
+					{
+						displayName: 'Name',
+						name: 'name',
+						type: 'string',
+						placeholder: 'workflow_user',
+					},
 				],
 				displayOptions: {
 					show: {
@@ -270,7 +276,19 @@ export class TiDBCloud implements INodeType {
 				default: '',
 				placeholder: 'SELECT id, name FROM product WHERE id < 40',
 				required: true,
-				description: 'The SQL query to execute',
+				description: 'The SQL query to execute. Use ? placeholders and Query Parameters for input values.',
+			},
+			{
+				displayName: 'Query Parameters',
+				name: 'queryParameters',
+				type: 'json',
+				displayOptions: {
+					show: {
+						operation: ['executeSQL'],
+					},
+				},
+				default: '[]',
+				description: 'JSON array of values to bind to ? placeholders in SQL, in order. Use an expression returning an array for values from input items.',
 			},
 
 			// ----------------------------------
@@ -527,8 +545,13 @@ export class TiDBCloud implements INodeType {
 			try {
 				const queryQueue = items.map((item, index) => {
 					const rawQuery = this.getNodeParameter('query', index) as string;
+					const queryParameters = this.getNodeParameter('queryParameters', index, '[]');
+					const values = typeof queryParameters === 'string' ? JSON.parse(queryParameters) : queryParameters;
+					if (!Array.isArray(values)) {
+						throw new NodeOperationError(this.getNode(), 'Query Parameters must be a JSON array');
+					}
 
-					return connection.query(rawQuery);
+					return values.length > 0 ? connection.execute(rawQuery, values) : connection.query(rawQuery);
 				});
 
 				returnItems = ((await Promise.all(queryQueue)) as mysql2.OkPacket[][]).reduce(
