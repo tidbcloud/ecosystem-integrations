@@ -604,7 +604,7 @@ export class TiDBCloud implements INodeType {
 					(collection, item) => collection.concat(Object.values(item as any)), // tslint:disable-line:no-any
 					[],
 				);
-				const queryResult = await connection.query(insertSQL, queryItems);
+				const queryResult = await connection.execute(insertSQL, queryItems);
 
 				returnItems = this.helpers.returnJsonArray(queryResult[0] as unknown as IDataObject);
 			} catch (error) {
@@ -635,7 +635,7 @@ export class TiDBCloud implements INodeType {
 					.map((column) => `${escapeIdentifier(column)} = ?`)
 					.join(',')} WHERE ${escapeIdentifier(updateKey)} = ?;`;
 				const queryQueue = updateItems.map((item) =>
-					connection.query(updateSQL, Object.values(item).concat(item[updateKey])),
+					connection.execute(updateSQL, [...Object.values(item), item[updateKey]]),
 				);
 				const queryResult = await Promise.all(queryQueue);
 				returnItems = this.helpers.returnJsonArray(
@@ -657,12 +657,12 @@ export class TiDBCloud implements INodeType {
 			const table = this.getNodeParameter('table', 0, '', { extractValue: true }) as string;
 			const deleteKey = this.getNodeParameter('deleteKey', 0) as string;
 			const deleteItems = copyInputItems(items, [deleteKey]);
-			const deleteSQL = `DELETE FROM ${escapeIdentifier(table)} WHERE ${escapeIdentifier(deleteKey)} =  ?;`;
+			const deleteSQL = `DELETE FROM ${escapeIdentifier(table)} WHERE ${escapeIdentifier(deleteKey)} IN (${deleteItems.map(() => '?').join(',')});`;
 			const queryItems = deleteItems.reduce(
 				(collection, item) => collection.concat(Object.values(item as any)), // tslint:disable-line:no-any
 				[],
 			);
-			const queryResult = await connection.query(deleteSQL, queryItems);
+			const queryResult = await connection.execute(deleteSQL, queryItems);
 			returnItems = this.helpers.returnJsonArray(queryResult[0] as unknown as IDataObject);
 		} else if (operation === 'createServerlessCluster') {
 			let result;
