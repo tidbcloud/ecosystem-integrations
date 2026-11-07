@@ -5,6 +5,21 @@ const path = require('path');
 const ts = require('typescript');
 const mysql = require('mysql2/promise');
 const urllib = require('urllib');
+const mysqlDirectory = path.dirname(require.resolve('mysql2'));
+const ExecutePacket = require(path.join(mysqlDirectory, 'lib/packets/execute'));
+const types = require(path.join(mysqlDirectory, 'lib/constants/types'));
+
+function assertJsonParameter(value) {
+	const packet = new ExecutePacket(1, [value], 45, 'local').toPacket();
+	// Skip the packet header, command, statement ID, flags and iteration count.
+	packet.offset = 14;
+	assert.equal(packet.readInt8(), 0); // NULL bitmap
+	assert.equal(packet.readInt8(), 1); // New parameter types
+	assert.equal(packet.readInt8(), types.JSON);
+	assert.equal(packet.readInt8(), 0); // Parameter flags
+	assert.deepEqual(JSON.parse(packet.readLengthCodedString('utf8')), value);
+	assert.equal(packet.offset, packet.buffer.length);
+}
 
 // Exercise current handlers without depending on generated dist files or a live database.
 function loadSource(relativePath, dependencies = {}) {
@@ -66,7 +81,10 @@ async function main() {
 		await TiDBCloud.prototype.execute.call({
 			...context(params), getInputData: () => Array.isArray(json) ? json.map(item => ({ json: item })) : [{ json }],
 		});
-		return calls[0];
+		if (['insert', 'update', 'delete'].includes(params.operation)) {
+			assert.equal(calls.length, 0, 'Row mutations must use prepared execution, not text formatting');
+		}
+		return preparedCalls[0] || calls[0];
 	};
 	try {
 		mysql.createConnection = async options => {
@@ -122,15 +140,63 @@ async function main() {
 		assert.deepEqual(await execute({
 			operation: 'delete', table: 'users` WHERE 1=1 -- ', deleteKey: '1=1 OR id',
 		}), {
-			sql: 'DELETE FROM `users`` WHERE 1=1 -- ` WHERE `1=1 OR id` =  ?;',
+			sql: 'DELETE FROM `users`` WHERE 1=1 -- ` WHERE `1=1 OR id` IN (?);',
 			values: [null],
 		});
 
 		assert.deepEqual(await execute({
 			operation: 'delete', table: 'users', deleteKey: 'id',
 		}, { id: '7 OR 1=1' }), {
-			sql: 'DELETE FROM `users` WHERE `id` =  ?;', values: ['7 OR 1=1'],
+			sql: 'DELETE FROM `users` WHERE `id` IN (?);', values: ['7 OR 1=1'],
 		});
+
+		const injectedName = { id: 5, is_admin: 1 };
+		assert.deepEqual(await execute({
+			operation: 'update', table: 'users', updateKey: 'id', columns: 'name',
+		}, { id: 5, name: injectedName }), {
+			sql: 'UPDATE `users` SET `id` = ?,`name` = ? WHERE `id` = ?;',
+			values: [5, injectedName, 5],
+		});
+		assertJsonParameter(preparedCalls[0].values[1]);
+
+		for (const key of [{ id: 1 }, [1, 2]]) {
+			assert.deepEqual(await execute({
+				operation: 'delete', table: 'users', deleteKey: 'id',
+			}, { id: key }), {
+				sql: 'DELETE FROM `users` WHERE `id` IN (?);', values: [key],
+			});
+			assertJsonParameter(preparedCalls[0].values[0]);
+			assert.deepEqual(await execute({
+				operation: 'update', table: 'users', updateKey: 'id', columns: 'name',
+			}, { id: key, name: 'Alice' }), {
+				sql: 'UPDATE `users` SET `id` = ?,`name` = ? WHERE `id` = ?;',
+				values: [key, 'Alice', key],
+			});
+		}
+
+		const tags = ['Alice', 'Bob'];
+		assert.deepEqual(await execute({
+			operation: 'insert', table: 'users', columns: 'name, tags', options: {},
+		}, { name: injectedName, tags }), {
+			sql: 'INSERT   INTO `users`(`name`,`tags`) VALUES (?,?);', values: [injectedName, tags],
+		});
+		preparedCalls[0].values.forEach(assertJsonParameter);
+
+		assert.deepEqual(await execute({
+			operation: 'delete', table: 'users', deleteKey: 'id',
+		}, [{ id: 1 }, { id: 2 }]), {
+			sql: 'DELETE FROM `users` WHERE `id` IN (?,?);', values: [1, 2],
+		});
+		assert.deepEqual(await execute({
+			operation: 'insert', table: 'users', columns: 'name, active', options: {},
+		}, [{ name: "O'Reilly", active: true }, { name: null, active: false }]), {
+			sql: 'INSERT   INTO `users`(`name`,`active`) VALUES (?,?),(?,?);',
+			values: ["O'Reilly", true, null, false],
+		});
+		await execute({
+			operation: 'update', table: 'users', updateKey: 'id', columns: 'name',
+		}, [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]);
+		assert.deepEqual(preparedCalls.map(call => call.values), [[1, 'Alice', 1], [2, 'Bob', 2]]);
 
 		assert.deepEqual(await execute({
 			operation: 'update', table: 'a.b', updateKey: '1=1 OR id', columns: 'name` = NULL -- ',
@@ -176,7 +242,7 @@ async function main() {
 			...context(), getCurrentNodeParameter: () => 'test',
 		});
 		assert.deepEqual(calls[1].values, ['test', '%%']);
-		console.log('SQL identifier, prepared query parameters, value binding, metadata search and INSERT priority regression tests passed');
+		console.log('SQL identifiers, prepared queries and row mutations, JSON binding, metadata search and INSERT priority regression tests passed');
 	} finally {
 		mysql.createConnection = originalConnect;
 		urllib.request = originalRequest;

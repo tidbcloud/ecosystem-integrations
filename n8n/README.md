@@ -51,6 +51,8 @@ Use a dedicated database user with only the permissions needed by the workflow, 
 
 Query Parameters accepts a JSON array, such as `["alice@example.com"]`, or an expression returning an array. Values bind to `?` placeholders in order, separately for each input item. Placeholders represent values, not table names, column names or SQL fragments. Existing workflows that interpolate external values into SQL must move those values to Query Parameters; adding this field does not automatically secure existing SQL expressions.
 
+Insert, Update and Delete also use prepared statements. Each selected input value occupies one parameter: strings, numbers, booleans and null remain data; objects and arrays are sent as JSON values rather than expanded into SQL assignments or lists. Ensure the destination column supports the supplied value. Missing selected fields still become null. No workflow field names or mappings change, but workflows relying on implicit object/array expansion must supply the intended data explicitly. Delete binds every input item's key in one `IN` predicate; previously only the first key was used.
+
 ## Fields Description
 
 Different operations require different fields to be filled in. The following shows the respective field descriptions according to the operation.
